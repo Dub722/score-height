@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>你的高考分数等于多高？</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","PingFang SC",sans-serif;
+  background:#f5f5f5;color:#333;min-height:100vh;display:flex;flex-direction:column;align-items:center;
+}
+.container{width:100%;max-width:440px;padding:16px 14px}
+.header{text-align:center;padding:24px 0 12px}
+.header h1{font-size:22px;font-weight:700;margin-bottom:4px;color:#222}
+.header .sub{font-size:13px;color:#999}
+.card{
+  background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:18px 16px;margin-bottom:14px;
+}
+.card-title{font-size:15px;font-weight:700;color:#222;margin-bottom:14px}
+.select-group{margin-bottom:14px}
+.select-group label{display:block;font-size:13px;font-weight:600;margin-bottom:5px;color:#555}
+.select-row{display:flex;gap:8px}
+.select-row .select-wrap{flex:1;position:relative}
+.select-row select{
+  width:100%;padding:10px 28px 10px 10px;font-size:14px;font-weight:500;
+  border:1px solid #ddd;border-radius:8px;color:#333;
+  background:#fff;outline:none;cursor:pointer;
+  -webkit-appearance:none;appearance:none;
+}
+.select-row select:focus{border-color:#555}
+.select-row select:disabled{background:#f5f5f5;color:#aaa;cursor:not-allowed}
+.select-wrap::after{content:'';position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #999;pointer-events:none}
+.gender-group{display:flex;gap:8px}
+.gender-btn{
+  flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;
+  font-size:14px;font-weight:600;cursor:pointer;background:#fff;color:#888;
+}
+.gender-btn.active{border-color:#333;background:#333;color:#fff}
+.score-input-wrap{position:relative}
+.score-input-wrap input{
+  width:100%;padding:14px 48px 14px 16px;font-size:32px;font-weight:700;
+  border:1px solid #ddd;border-radius:8px;text-align:center;color:#333;
+  outline:none;-webkit-appearance:none;background:#fff;
+}
+.score-input-wrap input:focus{border-color:#555}
+.score-input-wrap .unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#999;font-weight:500}
+.range-hint{font-size:11px;color:#aaa;text-align:center;margin-top:5px}
+.subject-info{font-size:11px;color:#888;text-align:center;margin-top:5px;line-height:1.5}
+.calc-btn{
+  width:100%;padding:14px;background:#333;color:#fff;
+  border:none;border-radius:8px;font-size:17px;font-weight:600;cursor:pointer;
+  letter-spacing:2px;margin-top:2px;
+}
+.calc-btn:active{background:#555}
+.result-card{display:none;text-align:center}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-card.show{display:block;animation:fadeInUp .4s ease}
+.result-big{font-size:52px;font-weight:800;color:#222;line-height:1.1}
+.result-big span{font-size:18px;font-weight:400;color:#999}
+.result-rank{font-size:15px;color:#555;margin:8px 0 16px;line-height:1.6}
+.result-rank strong{color:#333;font-size:17px}
+.height-bar-wrap{position:relative;height:240px;margin:0 auto 18px;max-width:280px;background:#f8f8f8;border-radius:12px 12px 0 0;overflow:hidden}
+.height-bar{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80px;
+  border-radius:12px 12px 0 0;
+  background:#333;
+  transition:height .8s cubic-bezier(.22,1.12,.49,1.05);
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px
+}
+.height-bar-label{font-size:17px;font-weight:700;color:#fff}
+.avg-line{position:absolute;left:5%;right:5%;border-top:1.5px dashed #ccc}
+.avg-line-label{position:absolute;right:6px;font-size:10px;color:#aaa;transform:translateY(-50%);background:#f8f8f8;padding:1px 4px;border-radius:2px}
+.perc-mark{position:absolute;left:6px;font-size:9px;color:#ccc;transform:translateY(-50%)}
+.result-msg{font-size:14px;line-height:1.8;color:#444;padding:0 4px;text-align:left}
+.result-msg .tag{display:inline-block;background:#f0f0f0;color:#555;padding:2px 7px;border-radius:4px;font-weight:600;font-size:12px;margin:1px}
+.share-section{margin-top:16px;display:flex;gap:8px}
+.share-btn{flex:1;padding:10px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+.share-btn:active{opacity:.8}
+.share-btn.copy{background:#f0f0f0;color:#333;border:1px solid #ddd}
+.share-btn.wechat{background:#07C160;color:#fff}
+.explain-toggle{
+  display:block;width:100%;padding:11px;background:none;border:1px solid #eee;
+  border-radius:8px;font-size:13px;color:#888;cursor:pointer;margin-top:10px;
+}
+.explain-text{display:none;font-size:12px;color:#888;line-height:1.8;padding:12px;margin-top:8px;background:#fafafa;border-radius:8px;text-align:left}
+.explain-text.show{display:block}
+.reset-btn{
+  display:block;width:100%;padding:10px;margin-top:8px;background:none;border:1px solid #eee;
+  border-radius:8px;font-size:14px;color:#555;font-weight:600;cursor:pointer;
+}
+.data-source{
+  font-size:11px;color:#bbb;text-align:center;padding:0 8px;margin-top:12px;line-height:1.6;
+  border-top:1px solid #f0f0f0;padding-top:12px
+}
+.data-source span{color:#999}
+.footer{text-align:center;padding:12px 0 32px;font-size:11px;color:#ccc;line-height:1.8}
+.footer a{color:#888;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>你的高考分数等于多高？</h1>
+    <div class="sub">把分数排名映射到19岁同龄人身高</div>
+  </div>
+
+  <div class="card" id="inputCard">
+    <div class="card-title">输入信息</div>
+
+    <div class="select-group">
+      <label>高考省份</label>
+      <div class="select-row">
+        <div class="select-wrap">
+          <select id="provinceSelect"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="select-group">
+      <label>高考年份 / 科目</label>
+      <div class="select-row">
+        <div class="select-wrap">
+          <select id="yearSelect">
+            <option value="2025">2025年</option>
+            <option value="2024">2024年</option>
+          </select>
+        </div>
+        <div class="select-wrap">
+          <select id="subjectSelect">
+            <option value="comprehensive">综合/不分科</option>
+            <option value="physics">物理类/理科</option>
+            <option value="history">历史类/文科</option>
+          </select>
+        </div>
+      </div>
+      <div class="subject-info" id="subjectInfo"></div>
+    </div>
+
+    <div class="select-group">
+      <label>性别</label>
+      <div class="gender-group">
+        <button class="gender-btn active" data-gender="male" onclick="selectGender('male',this)">男生</button>
+        <button class="gender-btn" data-gender="female" onclick="selectGender('female',this)">女生</button>
+      </div>
+    </div>
+
+    <div class="select-group">
+      <label>高考分数</label>
+      <div class="score-input-wrap">
+        <input type="number" id="scoreInput" placeholder="600" inputmode="numeric">
+        <span class="unit">分</span>
+      </div>
+      <div class="range-hint" id="rangeHint"></div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">查看对应身高</button>
+
+    <div class="data-source">
+      <span>数据来源说明</span><br>
+      高考人数和分数分布：各省教育考试院一分一段表<br>
+      同龄人总数：各省统计局出生人口数据<br>
+      身高数据：Lancet 2020 NCD-RisC 中国19岁研究<br>
+      非高考人群分数为合理估算值
+    </div>
+  </div>
+
+  <!-- 结果卡 -->
+  <div class="card result-card" id="resultCard">
+    <div class="result-big" id="resultHeight">--<span>cm</span></div>
+    <div class="result-rank" id="resultRank"></div>
+
+    <div class="height-bar-wrap" id="heightBarWrap">
+      <div class="height-bar" id="heightBar" style="height:0"><div class="height-bar-label"></div></div>
+      <div class="avg-line" id="avgLine"></div>
+      <div class="avg-line-label" id="avgLineLabel"></div>
+    </div>
+
+    <div class="result-msg" id="resultMsg"></div>
+
+    <div class="share-section">
+      <button class="share-btn copy" onclick="copyResult()">复制结果</button>
+      <button class="share-btn wechat" onclick="shareWechat()">分享给朋友</button>
+    </div>
+
+    <button class="explain-toggle" onclick="toggleExplain()">这个身高是怎么算出来的？</button>
+    <div class="explain-text" id="explainText"></div>
+
+    <button class="reset-btn" onclick="resetCalc()">重新计算</button>
+
+    <div class="data-source" id="resultDataSource" style="display:none">
+      <span>本页数据来源</span><br>
+      人口和分数数据来自各省教育考试院及统计局公开信息<br>
+      非高考人群分布为估算值，仅供参考<br>
+      身高参考 Lancet 2020（中国19岁：男175.7cm / 女163.5cm）
+    </div>
+  </div>
+
+  <div class="footer">
+    数字体感 · 让抽象的数字变得可以触摸
+  </div>
+</div>
+
+<script>
+// ===================== 统计函数 =====================
+function normalCDF(x){
+  const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  const sign=x<0?-1:1;x=Math.abs(x)/Math.sqrt(2);const t=1/(1+p*x);
+  return 0.5*(1+sign*(1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x)));
+}
+
+function normalQuantile(p){
+  if(p<=0)return -Infinity;if(p>=1)return Infinity;
+  const a0=2.50662823884,a1=-18.61500062529,a2=41.39119773534,a3=-25.44106049637;
+  const b1=-8.47351093090,b2=23.08336743743,b3=-21.06224101826,b4=3.13082909833;
+  const c0=0.3374754822726147,c1=0.9761690190917186,c2=0.1607979714918209,c3=0.0276438810333863;
+  const c4=0.0038405729373609,c5=0.0003951896511919,c6=0.0000321767881768,c7=0.0000002888167364,c8=0.0000003960315187;
+  const y=p-0.5;
+  if(Math.abs(y)<0.42){const r=y*y;return y*(((a3*r+a2)*r+a1)*r+a0)/((((b4*r+b3)*r+b2)*r+b1)*r+1)}
+  else{const r=p>0.5?1-p:p;const s=Math.log(-Math.log(r));let z=c0+s*(c1+s*(c2+s*(c3+s*(c4+s*(c5+s*(c6+s*(c7+s*c8)))))));return p>0.5?z:-z}
+}
+
+// ===================== 各省数据 =====================
+const PROVINCE_DATA = {
+  // 3+3 不分科省份
+  '浙江':{type:'comprehensive',2024:{comprehensive:{gp:300000,gm:515,gsd:96},tc:510000,nm:350,nsd:80,maxS:750},2025:{comprehensive:{gp:402000,gm:485,gsd:98},tc:530000,nm:340,nsd:82,maxS:750}},
+  '上海':{type:'comprehensive',2024:{comprehensive:{gp:54000,gm:410,gsd:72},tc:95000,nm:330,nsd:68,maxS:660},2025:{comprehensive:{gp:63000,gm:408,gsd:74},tc:98000,nm:325,nsd:68,maxS:660}},
+  '北京':{type:'comprehensive',2024:{comprehensive:{gp:67200,gm:460,gsd:82},tc:130000,nm:360,nsd:80,maxS:750},2025:{comprehensive:{gp:78900,gm:455,gsd:85},tc:132000,nm:355,nsd:80,maxS:750}},
+  '天津':{type:'comprehensive',2024:{comprehensive:{gp:70800,gm:458,gsd:88},tc:120000,nm:350,nsd:78,maxS:750},2025:{comprehensive:{gp:74000,gm:460,gsd:90},tc:122000,nm:345,nsd:78,maxS:750}},
+  '山东':{type:'comprehensive',2024:{comprehensive:{gp:674000,gm:435,gsd:98},tc:1050000,nm:330,nsd:82,maxS:750},2025:{comprehensive:{gp:692000,gm:432,gsd:100},tc:1060000,nm:325,nsd:82,maxS:750}},
+  '海南':{type:'comprehensive',2024:{comprehensive:{gp:74096,gm:470,gsd:110},tc:120000,nm:350,nsd:85,maxS:900},2025:{comprehensive:{gp:75141,gm:468,gsd:112},tc:122000,nm:345,nsd:85,maxS:900}},
+  // 3+1+2 文理分科省份
+  '广东':{type:'split',2024:{physics:{gp:500000,gm:443,gsd:98},history:{gp:260000,gm:458,gsd:93},tc:1200000,nm:325,nsd:82,maxS:750},2025:{physics:{gp:520000,gm:440,gsd:100},history:{gp:264000,gm:455,gsd:95},tc:1220000,nm:320,nsd:82,maxS:750}},
+  '河南':{type:'split',2024:{physics:{gp:850000,gm:423,gsd:96},history:{gp:510000,gm:438,gsd:92},tc:1650000,nm:315,nsd:80,maxS:750},2025:{physics:{gp:560000,gm:425,gsd:98},history:{gp:347215,gm:440,gsd:94},tc:1600000,nm:310,nsd:80,maxS:750}},
+  '河北':{type:'split',2024:{physics:{gp:420000,gm:425,gsd:95},history:{gp:254000,gm:440,gsd:92},tc:950000,nm:315,nsd:82,maxS:750},2025:{physics:{gp:400000,gm:427,gsd:97},history:{gp:240000,gm:442,gsd:94},tc:930000,nm:310,nsd:82,maxS:750}},
+  '江苏':{type:'split',2024:{physics:{gp:310000,gm:445,gsd:95},history:{gp:167000,gm:460,gsd:90},tc:720000,nm:335,nsd:82,maxS:750},2025:{physics:{gp:340000,gm:443,gsd:97},history:{gp:172000,gm:458,gsd:92},tc:730000,nm:330,nsd:82,maxS:750}},
+  '湖北':{type:'split',2024:{physics:{gp:250000,gm:436,gsd:92},history:{gp:136782,gm:450,gsd:88},tc:620000,nm:325,nsd:80,maxS:750},2025:{physics:{gp:250000,gm:434,gsd:94},history:{gp:136782,gm:448,gsd:90},tc:625000,nm:320,nsd:80,maxS:750}},
+  '湖南':{type:'split',2024:{physics:{gp:300000,gm:430,gsd:93},history:{gp:162739,gm:445,gsd:90},tc:750000,nm:320,nsd:80,maxS:750},2025:{physics:{gp:300000,gm:427,gsd:95},history:{gp:163000,gm:442,gsd:92},tc:760000,nm:315,nsd:80,maxS:750}},
+  '四川':{type:'split',2024:{physics:{gp:390000,gm:428,gsd:95},history:{gp:205400,gm:442,gsd:90},tc:900000,nm:320,nsd:80,maxS:750},2025:{physics:{gp:370000,gm:430,gsd:97},history:{gp:190370,gm:444,gsd:92},tc:920000,nm:315,nsd:80,maxS:750}},
+  '安徽':{type:'split',2024:{physics:{gp:320000,gm:428,gsd:93},history:{gp:175000,gm:442,gsd:90},tc:780000,nm:320,nsd:80,maxS:750},2025:{physics:{gp:310000,gm:430,gsd:95},history:{gp:161000,gm:444,gsd:92},tc:770000,nm:315,nsd:80,maxS:750}},
+  '江西':{type:'split',2024:{physics:{gp:320000,gm:424,gsd:92},history:{gp:176000,gm:438,gsd:88},tc:700000,nm:315,nsd:78,maxS:750},2025:{physics:{gp:320000,gm:426,gsd:94},history:{gp:176300,gm:440,gsd:90},tc:710000,nm:310,nsd:78,maxS:750}},
+  '福建':{type:'split',2024:{physics:{gp:158000,gm:440,gsd:90},history:{gp:84000,gm:455,gsd:87},tc:410000,nm:335,nsd:80,maxS:750},2025:{physics:{gp:170000,gm:437,gsd:92},history:{gp:88800,gm:452,gsd:89},tc:415000,nm:330,nsd:80,maxS:750}},
+  '辽宁':{type:'split',2024:{physics:{gp:128000,gm:437,gsd:88},history:{gp:69000,gm:450,gsd:85},tc:380000,nm:335,nsd:80,maxS:750},2025:{physics:{gp:135000,gm:434,gsd:90},history:{gp:70000,gm:448,gsd:87},tc:385000,nm:330,nsd:80,maxS:750}},
+  '重庆':{type:'split',2024:{physics:{gp:132000,gm:435,gsd:90},history:{gp:71000,gm:448,gsd:86},tc:340000,nm:325,nsd:78,maxS:750},2025:{physics:{gp:142000,gm:432,gsd:92},history:{gp:74000,gm:445,gsd:88},tc:345000,nm:320,nsd:78,maxS:750}},
+  '山西':{type:'split',2024:{physics:{gp:195000,gm:420,gsd:90},history:{gp:110400,gm:435,gsd:86},tc:450000,nm:320,nsd:78,maxS:750},2025:{physics:{gp:184809,gm:422,gsd:92},history:{gp:106652,gm:438,gsd:88},tc:440000,nm:315,nsd:78,maxS:750}},
+  '陕西':{type:'split',2024:{physics:{gp:175000,gm:430,gsd:90},history:{gp:95000,gm:445,gsd:86},tc:450000,nm:325,nsd:80,maxS:750},2025:{physics:{gp:183000,gm:427,gsd:92},history:{gp:98500,gm:442,gsd:88},tc:455000,nm:320,nsd:80,maxS:750}},
+  '广西':{type:'split',2024:{physics:{gp:250000,gm:414,gsd:90},history:{gp:139000,gm:428,gsd:85},tc:650000,nm:305,nsd:76,maxS:750},2025:{physics:{gp:247000,gm:416,gsd:92},history:{gp:132601,gm:430,gsd:87},tc:660000,nm:300,nsd:76,maxS:750}},
+  '贵州':{type:'split',2024:{physics:{gp:195000,gm:416,gsd:88},history:{gp:102000,gm:430,gsd:84},tc:550000,nm:305,nsd:76,maxS:750},2025:{physics:{gp:195000,gm:418,gsd:90},history:{gp:102000,gm:432,gsd:86},tc:560000,nm:300,nsd:76,maxS:750}},
+  '云南':{type:'split',2024:{physics:{gp:230000,gm:418,gsd:90},history:{gp:125000,gm:432,gsd:86},tc:580000,nm:310,nsd:78,maxS:750},2025:{physics:{gp:230000,gm:420,gsd:92},history:{gp:125000,gm:434,gsd:88},tc:590000,nm:305,nsd:78,maxS:750}},
+  '甘肃':{type:'split',2024:{physics:{gp:115000,gm:412,gsd:88},history:{gp:61800,gm:425,gsd:84},tc:310000,nm:305,nsd:76,maxS:750},2025:{physics:{gp:116000,gm:414,gsd:90},history:{gp:62179,gm:428,gsd:86},tc:315000,nm:300,nsd:76,maxS:750}},
+  '黑龙江':{type:'split',2024:{physics:{gp:125000,gm:416,gsd:90},history:{gp:67000,gm:430,gsd:86},tc:320000,nm:310,nsd:78,maxS:750},2025:{physics:{gp:120000,gm:418,gsd:92},history:{gp:64000,gm:432,gsd:88},tc:315000,nm:305,nsd:78,maxS:750}},
+  '吉林':{type:'split',2024:{physics:{gp:85000,gm:412,gsd:90},history:{gp:45105,gm:425,gsd:86},tc:250000,nm:305,nsd:76,maxS:750},2025:{physics:{gp:81000,gm:415,gsd:92},history:{gp:42575,gm:428,gsd:88},tc:248000,nm:300,nsd:76,maxS:750}},
+  '内蒙古':{type:'split',2024:{physics:{gp:105000,gm:415,gsd:90},history:{gp:58000,gm:428,gsd:85},tc:280000,nm:310,nsd:78,maxS:750},2025:{physics:{gp:102000,gm:417,gsd:92},history:{gp:55000,gm:430,gsd:87},tc:275000,nm:305,nsd:78,maxS:750}},
+  '新疆':{type:'split',2024:{physics:{gp:150000,gm:406,gsd:88},history:{gp:82600,gm:420,gsd:84},tc:400000,nm:295,nsd:76,maxS:750},2025:{physics:{gp:150000,gm:408,gsd:90},history:{gp:82600,gm:422,gsd:86},tc:410000,nm:290,nsd:76,maxS:750}},
+  '宁夏':{type:'split',2024:{physics:{gp:47000,gm:415,gsd:85},history:{gp:26000,gm:428,gsd:82},tc:120000,nm:305,nsd:76,maxS:750},2025:{physics:{gp:55000,gm:417,gsd:87},history:{gp:29000,gm:430,gsd:84},tc:122000,nm:300,nsd:76,maxS:750}},
+  '青海':{type:'split',2024:{physics:{gp:34000,gm:402,gsd:85},history:{gp:18100,gm:415,gsd:82},tc:90000,nm:295,nsd:74,maxS:750},2025:{physics:{gp:31000,gm:405,gsd:87},history:{gp:16174,gm:418,gsd:84},tc:88000,nm:290,nsd:74,maxS:750}},
+  '西藏':{type:'split',2024:{physics:{gp:23000,gm:376,gsd:85},history:{gp:13000,gm:390,gsd:80},tc:65000,nm:270,nsd:72,maxS:750},2025:{physics:{gp:23000,gm:378,gsd:87},history:{gp:13000,gm:392,gsd:82},tc:66000,nm:265,nsd:72,maxS:750}}
+};
+
+const MALE_H_MEAN=175.7,MALE_H_SD=5.8;
+const FEMALE_H_MEAN=163.5,FEMALE_H_SD=5.3;
+const H_MIN=148,H_MAX=198;
+
+let currentGender='male';
+let currentResult=null;
+
+function initProvinceSelect(){
+  const sel=document.getElementById('provinceSelect');
+  Object.keys(PROVINCE_DATA).forEach(p=>{
+    const o=document.createElement('option');o.value=p;o.textContent=p;sel.appendChild(o);
+  });
+  sel.value='浙江';
+  onProvinceChange();
+}
+
+function onProvinceChange(){
+  const pd=PROVINCE_DATA[document.getElementById('provinceSelect').value];
+  const ss=document.getElementById('subjectSelect');
+  const si=document.getElementById('subjectInfo');
+  if(!pd)return;
+  if(pd.type==='comprehensive'){
+    ss.innerHTML='<option value="comprehensive">综合/不分科</option>';
+    ss.disabled=true;
+    si.textContent='该省为3+3模式，不分文理科';
+  }else{
+    ss.innerHTML='<option value="physics">物理类/理科</option><option value="history">历史类/文科</option>';
+    ss.disabled=false;
+    const yd=pd[document.getElementById('yearSelect').value];
+    if(yd){
+      const pp=(yd.physics.gp/(yd.physics.gp+yd.history.gp)*100).toFixed(0);
+      si.textContent='该省为3+1+2模式，物理类约'+pp+'% / 历史类约'+(100-pp)+'%';
+    }
+  }
+  updateRangeHint();
+}
+
+function updateRangeHint(){
+  const d=PROVINCE_DATA[document.getElementById('provinceSelect').value];
+  const y=document.getElementById('yearSelect').value;
+  if(d&&d[y]){document.getElementById('rangeHint').textContent='满分 '+d[y].maxS+' 分，输入 0-'+d[y].maxS+' 之间的分数'}
+}
+
+document.getElementById('provinceSelect').addEventListener('change',onProvinceChange);
+document.getElementById('yearSelect').addEventListener('change',()=>{onProvinceChange();updateRangeHint()});
+
+function selectGender(g,btn){
+  currentGender=g;
+  document.querySelectorAll('.gender-btn').forEach(b=>{b.classList.remove('active');b.style.background='#fff';b.style.color='#888'});
+  btn.classList.add('active');btn.style.background='#333';btn.style.color='#fff';
+}
+
+function calculate(){
+  const province=document.getElementById('provinceSelect').value;
+  const year=document.getElementById('yearSelect').value;
+  const subject=document.getElementById('subjectSelect').value;
+  const rawScore=parseInt(document.getElementById('scoreInput').value);
+  const pd=PROVINCE_DATA[province];if(!pd)return alert('暂无该省份数据');
+  const d=pd[year];if(!d)return alert('暂无该年份数据');
+  if(isNaN(rawScore)||rawScore<0||rawScore>d.maxS)return alert('请输入 0-'+d.maxS+' 之间的分数');
+  const track=d[subject];if(!track)return alert('暂无该科目数据');
+
+  let totalGp=pd.type==='comprehensive'?d.comprehensive.gp:d.physics.gp+d.history.gp;
+  const nonGkPop=d.tc-totalGp;
+  const otherTrackPop=totalGp-track.gp;
+
+  const zGk=(rawScore-track.gm)/track.gsd;
+  const gkBelowPct=normalCDF(zGk);
+  const gkBelow=track.gp*gkBelowPct;
+  const zNon=(rawScore-d.nm)/d.nsd;
+  const nonBelowPct=normalCDF(zNon);
+  const nonBelow=nonGkPop*nonBelowPct;
+  const otherBelow=otherTrackPop*nonBelowPct;
+  const totalBelow=gkBelow+nonBelow+otherBelow;
+  const totalPct=totalBelow/d.tc;
+  const topPct=(1-totalPct)*100;
+
+  const hMean=currentGender==='male'?MALE_H_MEAN:FEMALE_H_MEAN;
+  const hSD=currentGender==='male'?MALE_H_SD:FEMALE_H_SD;
+  const zHeight=normalQuantile(Math.min(0.9999,Math.max(0.0001,totalPct)));
+  const height=hMean+zHeight*hSD;
+
+  let rankDesc,feelDesc;
+  if(topPct<=2){rankDesc='顶尖水平';feelDesc='走到哪里都是要抬头仰望的存在'}
+  else if(topPct<=5){rankDesc='非常优秀';feelDesc='在人群中一眼就能注意到你'}
+  else if(topPct<=10){rankDesc='相当不错';feelDesc='比身边绝大多数人都高了'}
+  else if(topPct<=20){rankDesc='很好了';feelDesc='走在路上属于要抬头看的那类'}
+  else if(topPct<=35){rankDesc='中上水平';feelDesc='你比身边一半以上的人都高'}
+  else if(topPct<=50){rankDesc='中等偏上';feelDesc='不显眼也不落后'}
+  else if(topPct<=65){rankDesc='中等水平';feelDesc='跟大多数人差不多'}
+  else{rankDesc='还有空间';feelDesc='不过已跑赢了没参加高考的那批人'}
+
+  const genderLabel=currentGender==='male'?'男生':'女生';
+  const pShort=province.replace(/省|市|自治区|壮族|回族|维吾尔/g,'');
+  const subLabel=subject==='comprehensive'?'综合':(subject==='physics'?'物理类':'历史类');
+
+  currentResult={
+    province,year,subject,rawScore,gender:currentGender,height,topPct,totalPct,
+    hMean,hSD,rankDesc,feelDesc,genderLabel,pShort,subLabel,
+    track,totalGp,nonGkPop,otherTrackPop,zGk,gkBelowPct
+  };
+
+  document.getElementById('inputCard').style.display='none';
+  const rc=document.getElementById('resultCard');rc.classList.add('show');
+  document.getElementById('resultHeight').innerHTML=height.toFixed(1)+'<span>cm</span>';
+  document.getElementById('resultRank').innerHTML=
+    pShort+' '+year+' '+subLabel+'，约 <strong>'+(d.tc/10000|0)+'</strong> 万同龄人中<br>排 <strong style="font-size:20px">前 '+topPct.toFixed(1)+'%</strong> · '+rankDesc;
+  document.getElementById('resultMsg').innerHTML=
+    '<strong>分数在同龄人中的位置：</strong><br>'
+    +'在 <span class="tag">'+(track.gp/10000).toFixed(1)+'万 '+subLabel+'考生</span>中，超越 <strong>'+(gkBelowPct*100).toFixed(1)+'%</strong> 的同科考生<br>'
+    +(pd.type==='split'?'加上 <span class="tag">'+(otherTrackPop/10000).toFixed(1)+'万 其他科目考生</span>和 ':'')
+    +'<span class="tag">'+(nonGkPop/10000).toFixed(1)+'万 非高考同龄人</span>后<br>'
+    +'全量排名 <strong>前 '+topPct.toFixed(1)+'%</strong>，对应 <strong>'+genderLabel+'身高 '+height.toFixed(1)+'cm</strong><br>'
+    +feelDesc;
+
+  setTimeout(()=>{
+    const barPct=Math.max(3,Math.min(100,(height-H_MIN)/(H_MAX-H_MIN)*100));
+    const bar=document.getElementById('heightBar');bar.style.height=barPct+'%';
+    bar.querySelector('.height-bar-label').textContent=height.toFixed(1)+'cm';
+  },150);
+
+  const avgPct=(hMean-H_MIN)/(H_MAX-H_MIN)*100;
+  document.getElementById('avgLine').style.bottom=avgPct+'%';
+  document.getElementById('avgLineLabel').style.bottom=avgPct+'%';
+  document.getElementById('avgLineLabel').textContent='同龄均值 '+hMean.toFixed(1);
+
+  const wrap=document.getElementById('heightBarWrap');
+  wrap.querySelectorAll('.perc-mark').forEach(e=>e.remove());
+  [10,25,50,75,90].forEach(pct=>{
+    const hPct=hMean+normalQuantile(pct/100)*hSD;
+    const posPct=(hPct-H_MIN)/(H_MAX-H_MIN)*100;
+    const mark=document.createElement('div');mark.className='perc-mark';
+    mark.style.bottom=posPct+'%';mark.textContent=pct+'%';wrap.appendChild(mark);
+  });
+
+  document.getElementById('resultDataSource').style.display='block';
+  document.getElementById('explainText').innerHTML=
+    '<strong>计算步骤：</strong><br>'
+    +'① '+pShort+' '+year+'年 <strong>'+subLabel+'</strong> '+((track.gp/10000).toFixed(1))+'万考生，分数分布 N('+track.gm.toFixed(0)+', '+track.gsd.toFixed(0)+'²)，你的Z-score='+zGk.toFixed(3)+'<br>'
+    +(pd.type==='split'?'② 另外 '+((otherTrackPop/10000).toFixed(1))+'万其他科目考生和':'② ')
+    +((nonGkPop/10000).toFixed(1))+'万非高考同龄人，按估算分布 N('+d.nm.toFixed(0)+', '+d.nsd.toFixed(0)+'²) 折算<br>'
+    +'③ 三拨人合并，你排全量 '+(d.tc/10000|0)+'万同龄人中的 <strong>前 '+topPct.toFixed(1)+'%</strong><br>'
+    +'④ 在19岁'+genderLabel+'身高分布 N('+hMean.toFixed(1)+', '+hSD.toFixed(1)+'²) 中取同一百分位 → <strong>'+height.toFixed(1)+'cm</strong><br>'
+    +'<br>数据：高考分布来自教育考试院一分一段表；非高考人群、跨科考生分布为合理估算；身高来自 Lancet 2020。';
+}
+
+function resetCalc(){
+  document.getElementById('inputCard').style.display='block';
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('heightBar').style.height='0';
+  document.getElementById('heightBar').querySelector('.height-bar-label').textContent='';
+  document.getElementById('resultDataSource').style.display='none';
+  currentResult=null;window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleExplain(){document.getElementById('explainText').classList.toggle('show')}
+
+function copyResult(){
+  if(!currentResult)return;
+  const r=currentResult,g=r.gender==='male'?'男生':'女生';
+  copyText('我的高考 '+r.rawScore+' 分（'+r.pShort+' '+r.year+' '+r.subLabel+'），等于'+g+'身高 '+r.height.toFixed(1)+'cm！在同龄人中排前 '+r.topPct.toFixed(1)+'%。你也来测测：（数字体感）');
+}
+
+function shareWechat(){
+  if(!currentResult)return;
+  const r=currentResult,g=r.gender==='male'?'男生':'女生';
+  copyText(r.pShort+' '+r.year+' '+r.subLabel+' '+r.rawScore+' 分 = '+g+'身高 '+r.height.toFixed(1)+'cm！前 '+r.topPct.toFixed(1)+'%。你也来测测？');
+}
+
+function copyText(text){
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>alert('已复制！去微信/朋友圈粘贴吧'))}
+  else{prompt('复制这段文字分享：',text)}
+}
+
+document.getElementById('scoreInput').addEventListener('keydown',function(e){if(e.key==='Enter')calculate()});
+
+initProvinceSelect();updateRangeHint();
+</script>
+</body>
+</html>
