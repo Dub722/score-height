@@ -225,23 +225,23 @@ body{
 <img src="chart_province_compare.png" alt="六省600分身高对比">
 <div class="img-caption">六省600分对应身高柱状对比（同年龄段全量排名）</div>
 
-<h2>四川：600分 = 185.5cm</h2>
-<p>83万考生，排全省同龄人前4.5%。平均分450，600分高出150分——含金量爆表。185.5cm走在春熙路上，你很难碰到比你高的人。</p>
+<h2>山东：600分 = 185.9cm</h2>
+<p>全国身高最高省份，男生平均176.4cm。600分排进前5.8%——高基础+高排名，双料冠军。185.9cm在山东街头也是鹤立鸡群。</p>
 
-<h2>河南：600分 = 185.3cm</h2>
-<p>136万考生，地狱模式。但正因如此，600分在这片修罗场里站得更直——全省同龄人前4.9%。</p>
+<h2>河南：600分 = 183.1cm</h2>
+<p>136万考生，同龄人前4.9%。河南男生平均173.4cm，排全国中下。但600分硬生生把排名拉到前5%——纯粹考出来的183cm，地狱模式的勋章。</p>
 
-<h2>广东：600分 = 185.1cm</h2>
-<p>76万考生，前5.4%。一群170出头的男生里站出一个185——想不显眼都难。</p>
+<h2>北京：600分 = 183.0cm</h2>
+<p>北京男生平均176.3cm，全国第二。600分排名虽只有前14%，但架不住底子好——站在176cm的起跑线上，轻松到183cm。不靠卷，靠基础。</p>
 
-<h2>山东：600分 = 184.8cm</h2>
-<p>100万考生，前5.8%。山东学霸多、竞争烈，能排进前6%是真有两把刷子。</p>
+<h2>浙江：600分 = 181.9cm</h2>
+<p>基准线。40.2万考生，同龄人前9.1%。浙江男生平均173.8cm——前9%的排名把身高拉到182cm。不顶天，但足够体面。</p>
 
-<h2>浙江：600分 = 183.4cm</h2>
-<p>40.2万考生，排同龄人前9.1%。我们的基准线。前9%在任何省份都优秀，183cm在任何城市都算高。</p>
+<h2>四川：600分 = 181.6cm</h2>
+<p>83万考生，高考均分450，600分高出150分——排名冲进前4.5%，六省最高。但四川男生平均仅171.5cm。超高的排名被偏矮的基础身高拖了后腿。在成都是个体面身高，放到山东就普通了。</p>
 
-<h2>北京：600分 = 182.0cm</h2>
-<p>矮了3公分。北京均分520，600只高出80分。而四川均分450，600高出150分——排名直接蹿到前4.5%。<strong>你在北京是182的普通人，在四川是185的巨人。</strong></p>
+<h2>广东：600分 = 181.5cm</h2>
+<p>76万考生，前5.4%。广东男生平均172.3cm——基数偏低，600分拉上来的幅度有限。181.5cm在广东街头已经是"一眼就能看到"的存在。</p>
 
 <img src="chart_province_rank.png" alt="六省排名对比">
 <div class="img-caption">六省600分排名横向对比</div>
@@ -251,7 +251,7 @@ body{
 <img src="chart_province_scatter.png" alt="同分异命散点图">
 <div class="img-caption">高考均分越低，600分的含金量越高</div>
 
-<p><strong>同一个600分，高考均分越低的省份，含金量越高。</strong>城市越大、平台越高，"高个子"的标准就越苛刻。</p>
+<p><strong>600分=多高，取决于两件事：你在全省的排名，以及你省的平均身高。</strong>山东靠"高基础+高排名"登顶，河南靠"纯排名"逆袭，四川排名最高却被身高拖了后腿。每个省有自己的算法。</p>
 
 <h2>怎么算的？</h2>
 <p>方法叫<strong>「百分位等值法」</strong>：你分数在全省同龄人中的排名百分位 = 你身高在同龄人中的排名百分位。分母不是只算考生，而是全省所有同龄人。</p>
@@ -316,7 +316,47 @@ const PROVINCE_DATA={
   '西藏':{type:'split',2024:{physics:{gp:23000,gm:376,gsd:85},history:{gp:13000,gm:390,gsd:80},tc:65000,nm:270,nsd:72,maxS:750},2025:{physics:{gp:23000,gm:378,gsd:87},history:{gp:13000,gm:392,gsd:82},tc:66000,nm:265,nsd:72,maxS:750}}
 };
 
-const MALE_H_MEAN=175.7,MALE_H_SD=5.8,FEMALE_H_MEAN=163.5,FEMALE_H_SD=5.3,H_MIN=148,H_MAX=198;
+// 全国默认身高（Lancet 2020, 19岁）
+const NATL_H={male:{mean:175.7,sd:5.8},female:{mean:163.5,sd:5.3}};
+// 各省19-22岁身高（2019年中国学生体质与健康调研报告）
+const PROV_HEIGHT={
+  '黑龙江':{male:{mean:178.17,sd:6.47},female:{mean:166.23,sd:6.72}},
+  '辽宁':{male:{mean:176.72,sd:6.41},female:{mean:164.45,sd:5.69}},
+  '山东':{male:{mean:176.38,sd:6.05},female:{mean:163.87,sd:6.01}},
+  '天津':{male:{mean:176.33,sd:6.14},female:{mean:163.48,sd:5.38}},
+  '北京':{male:{mean:176.26,sd:6.21},female:{mean:163.44,sd:5.63}},
+  '吉林':{male:{mean:176.24,sd:5.77},female:{mean:163.43,sd:6.27}},
+  '青海':{male:{mean:176.00,sd:5.08},female:{mean:163.21,sd:5.88}},
+  '河北':{male:{mean:175.51,sd:5.80},female:{mean:163.10,sd:5.43}},
+  '江苏':{male:{mean:175.48,sd:6.00},female:{mean:162.77,sd:5.21}},
+  '内蒙古':{male:{mean:175.32,sd:6.03},female:{mean:162.41,sd:5.34}},
+  '宁夏':{male:{mean:175.27,sd:5.95},female:{mean:162.35,sd:5.41}},
+  '新疆':{male:{mean:175.07,sd:6.18},female:{mean:162.32,sd:5.59}},
+  '陕西':{male:{mean:174.73,sd:6.20},female:{mean:162.07,sd:5.92}},
+  '湖北':{male:{mean:174.17,sd:5.70},female:{mean:161.80,sd:5.24}},
+  '安徽':{male:{mean:174.00,sd:6.08},female:{mean:161.51,sd:5.44}},
+  '浙江':{male:{mean:173.84,sd:6.04},female:{mean:161.51,sd:5.53}},
+  '甘肃':{male:{mean:173.79,sd:5.61},female:{mean:161.47,sd:5.50}},
+  '湖南':{male:{mean:173.72,sd:6.03},female:{mean:161.33,sd:4.85}},
+  '山西':{male:{mean:173.59,sd:5.65},female:{mean:161.23,sd:5.88}},
+  '上海':{male:{mean:173.55,sd:6.48},female:{mean:160.63,sd:5.52}},
+  '河南':{male:{mean:173.44,sd:5.81},female:{mean:160.12,sd:6.17}},
+  '福建':{male:{mean:172.48,sd:5.85},female:{mean:159.72,sd:5.67}},
+  '广东':{male:{mean:172.30,sd:5.68},female:{mean:159.70,sd:5.61}},
+  '重庆':{male:{mean:172.01,sd:5.68},female:{mean:159.62,sd:5.66}},
+  '江西':{male:{mean:171.91,sd:6.16},female:{mean:159.52,sd:6.01}},
+  '四川':{male:{mean:171.49,sd:5.97},female:{mean:159.39,sd:5.76}},
+  '海南':{male:{mean:171.40,sd:5.94},female:{mean:159.03,sd:5.69}},
+  '云南':{male:{mean:170.87,sd:5.82},female:{mean:158.76,sd:5.60}},
+  '广西':{male:{mean:170.06,sd:5.75},female:{mean:158.41,sd:5.90}},
+  '贵州':{male:{mean:169.92,sd:5.89},female:{mean:157.26,sd:4.92}},
+};
+function getProvHeight(province,gender){
+  const ph=PROV_HEIGHT[province];
+  if(ph&&ph[gender])return ph[gender];
+  return NATL_H[gender];
+}
+const H_MIN=148,H_MAX=198;
 let currentGender='male',currentResult=null;
 
 function initProvinceSelect(){
@@ -355,7 +395,7 @@ function calculate(){
   const zGk=(rawScore-track.gm)/track.gsd,gkBelowPct=normalCDF(zGk),gkBelow=track.gp*gkBelowPct;
   const zNon=(rawScore-d.nm)/d.nsd,nonBelowPct=normalCDF(zNon),nonBelow=nonGkPop*nonBelowPct,otherBelow=otherTrackPop*nonBelowPct;
   const totalBelow=gkBelow+nonBelow+otherBelow,totalPct=totalBelow/d.tc,topPct=(1-totalPct)*100;
-  const hMean=currentGender==='male'?MALE_H_MEAN:FEMALE_H_MEAN,hSD=currentGender==='male'?MALE_H_SD:FEMALE_H_SD;
+  const ph=getProvHeight(province,currentGender),hMean=ph.mean,hSD=ph.sd;
   const zHeight=normalQuantile(Math.min(0.9999,Math.max(0.0001,totalPct))),height=hMean+zHeight*hSD;
   let rankDesc,feelDesc;
   if(topPct<=2){rankDesc='顶尖水平';feelDesc='走到哪里都是要抬头仰望的存在'}
