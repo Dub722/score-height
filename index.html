@@ -6,270 +6,128 @@
 <title>600分，等于多高？</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --pri:#3A6B85;
-  --pri-dark:#2B5369;
-  --pri-light:#E6EFF4;
-  --pri-lighter:#F1F6F9;
-  --accent:#C8845A;
-  --accent-light:#F9F1EB;
-  --accent-dark:#B5734B;
-  --bg:#F7F5F2;
-  --card-bg:#FFFEFC;
-  --text:#3D3832;
-  --text-mid:#6E6662;
-  --text-light:#A09993;
-  --border:#E4DFD9;
-  --border-light:#EFEBE6;
-  --radius:10px;
-  --radius-sm:8px;
-  --shadow-sm:0 1px 6px rgba(60,50,40,.04);
-  --shadow:0 2px 12px rgba(60,50,40,.06);
-  --shadow-lg:0 6px 24px rgba(60,50,40,.10);
-  --shadow-xl:0 10px 36px rgba(60,50,40,.14);
-}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","PingFang SC",sans-serif;
-  background:var(--bg);color:var(--text);line-height:1.8;
+  background:#fff;color:#333;line-height:1.8;
 }
-
 /* ====== 封面区 ====== */
-.cover{text-align:center;background:#1E2A32;padding:40px 20px;color:#fff}
+.cover{text-align:center;background:#1a1a2e;padding:40px 20px;color:#fff}
 .cover img{max-width:100%;height:auto;border-radius:8px}
-.cover .cover-text{font-size:14px;color:#90A3B0;margin-top:12px}
+.cover .cover-text{font-size:14px;color:#bdc3c7;margin-top:12px}
 
 /* ====== 文章正文 ====== */
 .article{max-width:680px;margin:0 auto;padding:24px 20px}
-.article h1{font-size:24px;font-weight:800;color:var(--text);margin:24px 0 14px;line-height:1.35;letter-spacing:-0.3px}
-.article h2{font-size:18px;font-weight:700;color:var(--pri-dark);margin:30px 0 12px;padding-left:14px;border-left:4px solid var(--accent);line-height:1.4}
-.article h3{font-size:16px;font-weight:700;color:var(--text);margin:22px 0 10px;padding-bottom:5px;border-bottom:2px solid var(--pri-light)}
-.article p{font-size:15px;color:var(--text-mid);margin:12px 0;text-align:left}
+.article h1{font-size:24px;font-weight:800;color:#1a1a1a;margin:24px 0 14px;line-height:1.35;letter-spacing:-0.3px}
+.article h2{font-size:18px;font-weight:700;color:#1a1a1a;margin:28px 0 10px;padding-left:12px;border-left:3px solid #2C3E50}
+.article h3{font-size:16px;font-weight:700;color:#444;margin:20px 0 8px}
+.article p{font-size:15px;color:#444;margin:10px 0;text-align:left}
 .article blockquote{
-  margin:18px 0;padding:18px 22px;background:var(--pri-lighter);border-left:4px solid var(--pri);
-  font-size:15px;color:var(--text-mid);border-radius:0 var(--radius) var(--radius) 0;
-  position:relative;
+  margin:12px 0;padding:12px 16px;background:#f8f8f8;border-left:3px solid #ccc;
+  font-size:15px;color:#555;border-radius:0 6px 6px 0
 }
-.article blockquote::before{
-  content:'\201C';font-size:44px;color:var(--pri-light);
-  position:absolute;left:14px;top:-2px;font-family:Georgia,serif;line-height:1;pointer-events:none;
-}
-.article blockquote strong{color:var(--text)}
-.article img{max-width:100%;height:auto;margin:18px 0;border-radius:6px;border:1px solid var(--border-light);display:block}
-.article .img-caption{font-size:12px;color:var(--text-light);text-align:center;margin:-6px 0 18px}
+.article blockquote strong{color:#333}
+.article img{max-width:100%;height:auto;margin:18px 0;border-radius:6px;border:1px solid #eee;display:block}
+.article .img-caption{font-size:12px;color:#999;text-align:center;margin:-6px 0 16px}
 
 /* 对照表 */
-.article table{width:100%;border-collapse:separate;border-spacing:0;margin:14px 0;font-size:13px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border-light)}
-.article table th{background:var(--pri);color:#fff;padding:10px 10px;text-align:center;font-weight:600;font-size:12px;letter-spacing:.5px}
-.article table th:first-child{border-radius:var(--radius-sm) 0 0 0}
-.article table th:last-child{border-radius:0 var(--radius-sm) 0 0}
-.article table td{padding:10px 10px;text-align:center;border-bottom:1px solid var(--border-light)}
-.article table tbody tr:nth-child(even){background:var(--pri-lighter)}
-.article table tbody tr:hover{background:var(--accent-light)}
-.article table .highlight{background:var(--accent-light)!important;font-weight:700}
-.article table .highlight td{color:var(--accent-dark)}
+.article table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+.article table th{background:#f5f5f5;padding:8px 6px;text-align:center;font-weight:700;font-size:12px}
+.article table td{padding:8px 6px;text-align:center;border-bottom:1px solid #eee}
+.article table .highlight{background:#fff3f3;font-weight:700}
+.article table .highlight td{color:#d63434}
 
-/* 文章内强调色：省份名 和 身高数字 */
-.prov-name{color:var(--pri-dark);font-weight:700}
-.ht-num{color:var(--accent-dark);font-weight:700}
-
-/* 六省排序序号 -->
-.ordered-badge{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:26px;height:26px;border-radius:50%;
-  background:linear-gradient(135deg,var(--pri),var(--pri-dark));
-  color:#fff;font-size:13px;font-weight:700;margin-right:8px;
-  flex-shrink:0;box-shadow:0 2px 6px rgba(58,107,133,.2);
-}
-
-/* 分隔区域 -->
-.section-sep{
-  position:relative;text-align:center;margin:44px 0 6px;padding:0 20px;
-}
-.section-sep-line{position:absolute;left:20px;right:20px;top:50%;height:1px;background:linear-gradient(to right,transparent,var(--border) 15%,var(--border) 85%,transparent)}
-.section-sep-inner{
-  position:relative;display:inline-flex;align-items:center;gap:14px;
-  padding:0 20px;background:var(--bg);
-}
-.section-sep-inner .sep-dot{
-  width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.6;
-}
-.section-sep-inner .sep-text{
-  font-size:14px;color:var(--text-mid);font-weight:600;letter-spacing:4px;
-}
+/* 分隔 */
+.divider{text-align:center;margin:36px 0 16px;color:#bbb;font-size:13px;letter-spacing:8px}
+.divider::before,.divider::after{content:' — ';color:#ddd}
 
 /* ====== 计算器区域 ====== */
 .calc-section{max-width:440px;margin:0 auto;padding:16px}
-.calc-header{text-align:center;padding:22px 0 18px}
-.calc-header .calc-icon{
-  display:inline-block;font-size:44px;margin-bottom:10px;
-  animation:iconFloat 3s ease-in-out infinite;
-}
-@keyframes iconFloat{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-8px)}
-}
-.calc-header h2{font-size:20px;font-weight:800;color:var(--text)}
-.calc-header p{font-size:14px;color:var(--text-mid);text-align:center;line-height:1.6}
+.calc-header{text-align:center;padding:16px 0 12px}
+.calc-header h2{font-size:20px;font-weight:800;color:#222}
+.calc-header p{font-size:14px;color:#777;text-align:center;line-height:1.6}
 .card{
-  background:var(--card-bg);border:1px solid var(--border-light);border-radius:14px;padding:22px 18px;margin-bottom:16px;
-  box-shadow:var(--shadow);
-  transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s ease;
+  background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:18px 16px;margin-bottom:14px;
 }
-.card:hover{
-  transform:translateY(-2px);
-  box-shadow:var(--shadow-lg);
-}
-.card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px}
-.select-group{margin-bottom:16px}
-.select-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text-mid)}
+.card-title{font-size:15px;font-weight:700;color:#222;margin-bottom:14px}
+.select-group{margin-bottom:14px}
+.select-group label{display:block;font-size:13px;font-weight:600;margin-bottom:5px;color:#555}
 .select-row{display:flex;gap:8px}
 .select-row .select-wrap{flex:1;position:relative}
 .select-row select{
-  width:100%;padding:10px 30px 10px 12px;font-size:14px;font-weight:500;
-  border:1px solid var(--border);border-radius:var(--radius);color:var(--text);
-  background:var(--card-bg);outline:none;cursor:pointer;
+  width:100%;padding:10px 28px 10px 10px;font-size:14px;font-weight:500;
+  border:1px solid #ddd;border-radius:8px;color:#333;
+  background:#fff;outline:none;cursor:pointer;
   -webkit-appearance:none;appearance:none;
-  transition:border-color .2s,box-shadow .2s;
 }
-.select-row select:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(58,107,133,.14)}
-.select-row select:disabled{background:var(--bg);color:var(--text-light);cursor:not-allowed}
-.select-wrap::after{content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);
-  width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--pri);pointer-events:none}
-
-/* optgroup -->
-select optgroup{
-  font-weight:700;font-style:normal;color:var(--pri-dark);
-  font-size:13px;background:var(--pri-lighter);padding:4px 0;
-}
-select option{
-  font-weight:400;color:var(--text);font-size:14px;padding:8px 12px;
-}
-
+.select-row select:focus{border-color:#555}
+.select-row select:disabled{background:#f5f5f5;color:#aaa;cursor:not-allowed}
+.select-wrap::after{content:'';position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #999;pointer-events:none}
 .gender-group{display:flex;gap:8px}
 .gender-btn{
-  flex:1;padding:11px;border:1px solid var(--border);border-radius:var(--radius);text-align:center;
-  font-size:14px;font-weight:600;cursor:pointer;
-  transition:all .2s;
+  flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;
+  font-size:14px;font-weight:600;cursor:pointer;background:#fff;color:#888;
 }
-.gender-btn{background:var(--card-bg)!important;color:var(--text-mid)!important}
-.gender-btn:hover{background:var(--pri-lighter)!important}
-.gender-btn.active{background:var(--pri)!important;color:#fff!important;border-color:var(--pri)!important}
+.gender-btn.active{border-color:#333;background:#333;color:#fff}
 .score-input-wrap{position:relative}
 .score-input-wrap input{
-  width:100%;padding:16px 50px 16px 16px;font-size:32px;font-weight:700;
-  border:2px solid var(--border);border-radius:var(--radius);text-align:center;color:var(--text);
-  outline:none;-webkit-appearance:none;background:var(--card-bg);
-  transition:border-color .2s,box-shadow .2s;
+  width:100%;padding:14px 48px 14px 16px;font-size:32px;font-weight:700;
+  border:1px solid #ddd;border-radius:8px;text-align:center;color:#333;
+  outline:none;-webkit-appearance:none;background:#fff;
 }
-.score-input-wrap input:focus{border-color:var(--pri);box-shadow:0 0 0 4px rgba(58,107,133,.11)}
-.score-input-wrap .unit{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text-light);font-weight:500}
-.range-hint{font-size:11px;color:var(--text-light);text-align:center;margin-top:6px}
-.subject-info{font-size:11px;color:var(--text-light);text-align:center;margin-top:6px;line-height:1.5}
+.score-input-wrap input:focus{border-color:#555}
+.score-input-wrap .unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#999}
+.range-hint{font-size:11px;color:#aaa;text-align:center;margin-top:5px}
+.subject-info{font-size:11px;color:#888;text-align:center;margin-top:5px;line-height:1.5}
 .calc-btn{
-  width:100%;padding:15px;background:var(--pri);color:#fff;
-  border:none;border-radius:var(--radius);font-size:17px;font-weight:600;cursor:pointer;letter-spacing:2px;
-  transition:background .2s,transform .15s,box-shadow .2s;
+  width:100%;padding:14px;background:#2C3E50;color:#fff;
+  border:none;border-radius:8px;font-size:17px;font-weight:600;cursor:pointer;letter-spacing:2px;
 }
-.calc-btn:hover{background:var(--pri-dark);box-shadow:0 4px 14px rgba(58,107,133,.28)}
-.calc-btn:active{background:var(--pri-dark);transform:scale(.98)}
+.calc-btn:active{background:#1a2d3d}
 .calc-btn.loading{opacity:.7;pointer-events:none}
-.calc-btn:focus-visible,.reset-btn:focus-visible,.explain-toggle:focus-visible,.share-btn:focus-visible,.gender-btn:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.calc-btn:focus-visible,.reset-btn:focus-visible,.explain-toggle:focus-visible,.share-btn:focus-visible,.gender-btn:focus-visible{outline:2px solid #2C3E50;outline-offset:2px}
 .result-card{display:none;text-align:center}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.result-card.show{display:block;animation:fadeInUp .45s ease}
-.result-card .card{
-  border-top:4px solid var(--pri);transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s ease;
-}
-
-/* 结果数字动效 */
-@keyframes numberPop{
-  0%{opacity:0;transform:scale(.6)}
-  55%{opacity:1;transform:scale(1.07)}
-  75%{transform:scale(.96)}
-  100%{opacity:1;transform:scale(1)}
-}
-.result-big{
-  font-size:62px;font-weight:900;color:var(--pri-dark);line-height:1.05;
-  animation:numberPop .65s cubic-bezier(.34,1.56,.64,1) forwards;
-  position:relative;display:inline-block;
-}
-.result-big::after{
-  content:'';position:absolute;bottom:4px;left:10%;right:10%;height:8px;
-  background:linear-gradient(90deg,transparent,var(--accent-light),var(--accent),var(--accent-light),transparent);
-  border-radius:4px;opacity:.45;z-index:-1;
-}
-.result-big span{font-size:22px;font-weight:400;color:var(--text-light)}
-.result-rank{font-size:15px;color:var(--text-mid);margin:10px 0 18px;line-height:1.6}
-.result-rank strong{color:var(--text);font-size:17px}
-.height-bar-wrap{position:relative;height:240px;margin:0 auto 20px;max-width:280px;background:var(--pri-lighter);border-radius:14px 14px 0 0;overflow:hidden;border:1px solid var(--border-light);border-bottom:none}
+.result-card.show{display:block;animation:fadeInUp .4s ease}
+.result-big{font-size:52px;font-weight:800;color:#222;line-height:1.1}
+.result-big span{font-size:18px;font-weight:400;color:#999}
+.result-rank{font-size:15px;color:#555;margin:8px 0 16px;line-height:1.6}
+.result-rank strong{color:#333;font-size:17px}
+.height-bar-wrap{position:relative;height:240px;margin:0 auto 18px;max-width:280px;background:#f8f8f8;border-radius:12px 12px 0 0;overflow:hidden}
 .height-bar{
   position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80px;
-  border-radius:14px 14px 0 0;
-  background:linear-gradient(180deg,var(--accent) 0%,var(--pri) 60%,var(--pri-dark) 100%);
-  transition:height .9s cubic-bezier(.22,1.12,.49,1.05);
-  display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;
-  box-shadow:0 -2px 14px rgba(58,107,133,.22),0 0 20px rgba(58,107,133,.08)
+  border-radius:12px 12px 0 0;background:#2C3E50;
+  transition:height .8s cubic-bezier(.22,1.12,.49,1.05);
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px
 }
 .height-bar-label{font-size:17px;font-weight:700;color:#fff}
-.avg-line{position:absolute;left:5%;right:5%;border-top:1.5px dashed var(--text-light)}
-.avg-line-label{position:absolute;right:6px;font-size:10px;color:var(--text-light);transform:translateY(-50%);background:var(--pri-lighter);padding:2px 6px;border-radius:3px}
-.perc-mark{position:absolute;left:6px;font-size:9px;color:var(--border);transform:translateY(-50%)}
-.result-msg{font-size:14px;line-height:1.8;color:var(--text-mid);padding:4px 4px;text-align:left}
-.result-msg .tag{display:inline-block;background:var(--pri-lighter);color:var(--pri-dark);padding:2px 9px;border-radius:4px;font-weight:600;font-size:12px;margin:1px 2px}
-.share-section{margin-top:18px;display:flex;gap:8px}
-.share-btn{flex:1;padding:11px;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
-.share-btn.copy{background:var(--card-bg);color:var(--pri);border:2px solid var(--pri)}
-.share-btn.copy:hover{background:var(--pri-light)}
-.share-btn.wechat{background:#2AAE67;color:#fff}
-.share-btn.wechat:hover{background:#238E55}
+.avg-line{position:absolute;left:5%;right:5%;border-top:1.5px dashed #ccc}
+.avg-line-label{position:absolute;right:6px;font-size:10px;color:#aaa;transform:translateY(-50%);background:#f8f8f8;padding:1px 4px;border-radius:2px}
+.perc-mark{position:absolute;left:6px;font-size:9px;color:#ccc;transform:translateY(-50%)}
+.result-msg{font-size:14px;line-height:1.8;color:#444;padding:0 4px;text-align:left}
+.result-msg .tag{display:inline-block;background:#f0f0f0;color:#555;padding:2px 7px;border-radius:4px;font-weight:600;font-size:12px;margin:1px}
+.share-section{margin-top:16px;display:flex;gap:8px}
+.share-btn{flex:1;padding:10px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+.share-btn.copy{background:#f0f0f0;color:#333;border:1px solid #ddd}
+.share-btn.wechat{background:#07C160;color:#fff}
 .explain-toggle{
-  display:block;width:100%;padding:12px;background:none;border:1px solid var(--border-light);
-  border-radius:var(--radius);font-size:13px;color:var(--text-light);cursor:pointer;margin-top:14px;
-  transition:all .2s;
+  display:block;width:100%;padding:11px;background:none;border:1px solid #eee;
+  border-radius:8px;font-size:13px;color:#888;cursor:pointer;margin-top:10px;
 }
-.explain-toggle:hover{color:var(--pri);border-color:var(--pri);background:var(--pri-lighter)}
-.explain-text{display:none;font-size:13px;color:var(--text-mid);line-height:1.8;padding:15px;margin-top:10px;background:var(--pri-lighter);border-radius:var(--radius);text-align:left}
-.explain-text.show{display:block;animation:fadeInUp .35s ease}
+.explain-text{display:none;font-size:13px;color:#777;line-height:1.8;padding:12px;margin-top:8px;background:#fafafa;border-radius:8px;text-align:left}
+.explain-text.show{display:block}
 .reset-btn{
-  display:block;width:100%;padding:11px;margin-top:10px;background:var(--card-bg);border:1px solid var(--border-light);
-  border-radius:var(--radius);font-size:14px;color:var(--text-mid);font-weight:600;cursor:pointer;
-  transition:all .2s;
+  display:block;width:100%;padding:10px;margin-top:8px;background:none;border:1px solid #eee;
+  border-radius:8px;font-size:14px;color:#555;font-weight:600;cursor:pointer;
 }
-.reset-btn:hover{background:var(--pri-lighter);color:var(--pri);border-color:var(--pri-light)}
 .data-source{
-  font-size:11px;color:var(--text-light);text-align:center;padding:0 8px;margin-top:16px;line-height:1.6;
-  border-top:1px solid var(--border-light);padding-top:14px
+  font-size:11px;color:#bbb;text-align:center;padding:0 8px;margin-top:12px;line-height:1.6;
+  border-top:1px solid #f0f0f0;padding-top:12px
 }
-.data-source .ds-icon{display:inline-block;margin-right:4px;font-size:12px}
-.data-source span{color:var(--text-mid)}
-
-/* 计算器底部渐变过渡 */
-.calc-to-article{
-  position:relative;height:36px;overflow:hidden;margin:0 20px;
-}
-.calc-to-article::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(to right,transparent,var(--accent-light),var(--accent),var(--accent-light),transparent);
-}
+.data-source span{color:#999}
 
 /* 页脚 */
-.footer{
-  text-align:center;padding:28px 0 40px;font-size:11px;color:var(--text-light);line-height:1.8;
-  position:relative;
-}
-.footer::before{
-  content:'';display:block;width:60px;height:2px;background:linear-gradient(90deg,var(--pri),var(--accent));
-  margin:0 auto 16px;border-radius:1px;
-}
-.footer .footer-brand{
-  display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
-  color:var(--pri-dark);margin:6px 0;
-}
-.footer .footer-brand .brand-logo{
-  width:18px;height:18px;border-radius:4px;background:linear-gradient(135deg,var(--pri),var(--accent));
-  display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:900;
-}
-.footer .footer-tagline{font-size:11px;color:var(--text-light)}
+.footer{text-align:center;padding:20px 0 40px;font-size:11px;color:#ccc;line-height:1.8}
 </style>
 </head>
 <body>
@@ -277,7 +135,6 @@ select option{
 <!-- ==================== 交互计算器 ==================== -->
 <div class="calc-section">
   <div class="calc-header">
-    <div class="calc-icon">📏</div>
     <h2>你的高考分数等于多高？</h2>
     <p>用身高单位重新理解分数：选省份、年份、科目，输入你的分数</p>
   </div>
@@ -335,23 +192,15 @@ select option{
     <div class="explain-text" id="explainText"></div>
     <button class="reset-btn" onclick="resetCalc()">重新计算</button>
     <div class="data-source">
-      <span class="ds-icon">📋</span> <span>数据说明</span><br>
+      <span>数据说明</span><br>
       高考数据来自各省教育考试院一分一段表、统计局出生人口数据<br>
       非高考人群分数为合理估算值 · 身高数据 Lancet 2020 NCD-RisC
     </div>
   </div>
 </div>
 
-<!-- ==================== 分隔区域 ==================== -->
-<div class="section-sep">
-  <div class="section-sep-line"></div>
-  <div class="section-sep-inner">
-    <span class="sep-dot"></span>
-    <span class="sep-text">阅读正文</span>
-    <span class="sep-dot"></span>
-  </div>
-</div>
-<div class="calc-to-article"></div>
+<!-- ==================== 分隔线 ==================== -->
+<div class="divider">阅读正文</div>
 
 <!-- ==================== 推文正文 ==================== -->
 <div class="article">
@@ -364,8 +213,8 @@ select option{
 <h1>600分，等于多高？（2025六省对比）</h1>
 
 <blockquote>
-  <strong>600 分 = <span class="ht-num">183.4 cm</span>（男生）/ <span class="ht-num">170.6 cm</span>（女生）</strong><br>
-  在浙江约 53 万同龄人中排<strong>前 9.1%</strong>。但换个省考，你是 <span class="ht-num">185.5cm</span>。
+  <strong>600 分 = 183.4 cm（男生）/ 170.6 cm（女生）</strong><br>
+  在浙江约 53 万同龄人中排<strong>前 9.1%</strong>。但换个省考，你是 185.5cm。
 </blockquote>
 
 <p>600分。在很多省份这是个分水岭——211稳了，985有望。</p>
@@ -373,34 +222,34 @@ select option{
 
 <h2>六省600分，对应多高？</h2>
 
-<img src="chart_province_compare.png" alt="六省600分身高对比" style="margin-bottom:6px">
-<div class="img-caption" style="margin-bottom:28px">六省600分对应身高柱状对比（同年龄段全量排名）</div>
+<img src="chart_province_compare.png" alt="六省600分身高对比">
+<div class="img-caption">六省600分对应身高柱状对比（同年龄段全量排名）</div>
 
-<h2><span class="ordered-badge">①</span>山东：600分 = <span class="ht-num">185.9cm</span></h2>
-<p>全国身高最高省份，男生平均176.4cm。600分排进前5.8%——高基础+高排名，双料冠军。<span class="ht-num">185.9cm</span>在山东街头也是鹤立鸡群。</p>
+<h2>山东：600分 = 185.9cm</h2>
+<p>全国身高最高省份，男生平均176.4cm。600分排进前5.8%——高基础+高排名，双料冠军。185.9cm在山东街头也是鹤立鸡群。</p>
 
-<h2><span class="ordered-badge">②</span>河南：600分 = <span class="ht-num">183.1cm</span></h2>
-<p>136万考生，同龄人前4.9%。河南男生平均173.4cm，排全国中下。但600分硬生生把排名拉到前5%——纯粹考出来的<span class="ht-num">183cm</span>，地狱模式的勋章。</p>
+<h2>河南：600分 = 183.1cm</h2>
+<p>136万考生，同龄人前4.9%。河南男生平均173.4cm，排全国中下。但600分硬生生把排名拉到前5%——纯粹考出来的183cm，地狱模式的勋章。</p>
 
-<h2><span class="ordered-badge">③</span>北京：600分 = <span class="ht-num">183.0cm</span></h2>
-<p>北京男生平均176.3cm，全国第二。600分排名虽只有前14%，但架不住底子好——站在176cm的起跑线上，轻松到<span class="ht-num">183cm</span>。不靠卷，靠基础。</p>
+<h2>北京：600分 = 183.0cm</h2>
+<p>北京男生平均176.3cm，全国第二。600分排名虽只有前14%，但架不住底子好——站在176cm的起跑线上，轻松到183cm。不靠卷，靠基础。</p>
 
-<h2><span class="ordered-badge">④</span>浙江：600分 = <span class="ht-num">181.9cm</span></h2>
-<p>基准线。40.2万考生，同龄人前9.1%。浙江男生平均173.8cm——前9%的排名把身高拉到<span class="ht-num">182cm</span>。不顶天，但足够体面。</p>
+<h2>浙江：600分 = 181.9cm</h2>
+<p>基准线。40.2万考生，同龄人前9.1%。浙江男生平均173.8cm——前9%的排名把身高拉到182cm。不顶天，但足够体面。</p>
 
-<h2><span class="ordered-badge">⑤</span>四川：600分 = <span class="ht-num">181.6cm</span></h2>
+<h2>四川：600分 = 181.6cm</h2>
 <p>83万考生，高考均分450，600分高出150分——排名冲进前4.5%，六省最高。但四川男生平均仅171.5cm。超高的排名被偏矮的基础身高拖了后腿。在成都是个体面身高，放到山东就普通了。</p>
 
-<h2><span class="ordered-badge">⑥</span>广东：600分 = <span class="ht-num">181.5cm</span></h2>
-<p>76万考生，前5.4%。广东男生平均172.3cm——基数偏低，600分拉上来的幅度有限。<span class="ht-num">181.5cm</span>在广东街头已经是"一眼就能看到"的存在。</p>
+<h2>广东：600分 = 181.5cm</h2>
+<p>76万考生，前5.4%。广东男生平均172.3cm——基数偏低，600分拉上来的幅度有限。181.5cm在广东街头已经是"一眼就能看到"的存在。</p>
 
-<img src="chart_province_rank.png" alt="六省排名对比" style="margin-bottom:6px">
-<div class="img-caption" style="margin-bottom:28px">六省600分排名横向对比</div>
+<img src="chart_province_rank.png" alt="六省排名对比">
+<div class="img-caption">六省600分排名横向对比</div>
 
 <h2>规律出来了</h2>
 
-<img src="chart_province_scatter.png" alt="同分异命散点图" style="margin-bottom:6px">
-<div class="img-caption" style="margin-bottom:28px">高考均分越低，600分的含金量越高</div>
+<img src="chart_province_scatter.png" alt="同分异命散点图">
+<div class="img-caption">高考均分越低，600分的含金量越高</div>
 
 <p><strong>600分=多高，取决于两件事：你在全省的排名，以及你省的平均身高。</strong>山东靠"高基础+高排名"登顶，河南靠"纯排名"逆袭，四川排名最高却被身高拖了后腿。每个省有自己的算法。</p>
 
@@ -410,17 +259,11 @@ select option{
 
 <blockquote><strong>「还行吧，大概就是 185 的感觉。」</strong></blockquote>
 
-<p style="margin-top:20px"><span style="display:inline-block;margin-right:4px;font-size:11px">📋</span><strong>数据来源</strong>：各省教育考试院（2025年一分一段表）· 各省统计局 · Lancet 2020 NCD-RisC</p>
+<p style="font-size:12px;color:#999;margin-top:24px"><strong>数据来源</strong>：各省教育考试院（2025年一分一段表）· 各省统计局 · Lancet 2020 NCD-RisC</p>
 
 </div>
 
-<div class="footer">
-  <div class="footer-brand">
-    <span class="brand-logo">D</span>
-    数字体感
-  </div>
-  <div class="footer-tagline">让抽象的数字变得可以触摸</div>
-</div>
+<div class="footer">数字体感 · 让抽象的数字变得可以触摸</div>
 
 <script>
 function normalCDF(x){
@@ -516,30 +359,9 @@ function getProvHeight(province,gender){
 const H_MIN=148,H_MAX=198;
 let currentGender='male',currentResult=null;
 
-// 省份分组（按地理区域）
-const PROVINCE_GROUPS = {
-  '华北':['北京','天津','河北','山西','内蒙古'],
-  '东北':['辽宁','吉林','黑龙江'],
-  '华东':['上海','江苏','浙江','安徽','福建','江西','山东'],
-  '华中':['河南','湖北','湖南'],
-  '华南':['广东','广西','海南'],
-  '西南':['重庆','四川','贵州','云南','西藏'],
-  '西北':['陕西','甘肃','青海','宁夏','新疆']
-};
-
 function initProvinceSelect(){
   const sel=document.getElementById('provinceSelect');
-  for(const [group,provinces] of Object.entries(PROVINCE_GROUPS)){
-    const og=document.createElement('optgroup');
-    og.label=group;
-    provinces.forEach(p=>{
-      const o=document.createElement('option');
-      o.value=p;
-      o.textContent=p;
-      og.appendChild(o);
-    });
-    sel.appendChild(og);
-  }
+  Object.keys(PROVINCE_DATA).forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;sel.appendChild(o)});
   sel.value='浙江';onProvinceChange();
 }
 function onProvinceChange(){
@@ -596,12 +418,6 @@ function calculate(){
   [10,25,50,75,90].forEach(pct=>{const hPct=hMean+normalQuantile(pct/100)*hSD,posPct=(hPct-H_MIN)/(H_MAX-H_MIN)*100;const mark=document.createElement('div');mark.className='perc-mark';mark.style.bottom=posPct+'%';mark.textContent=pct+'%';wrap.appendChild(mark)});
   document.getElementById('explainText').innerHTML='<strong>计算步骤：</strong><br>① '+pShort+' '+year+'年 <strong>'+subLabel+'</strong> '+((track.gp/10000).toFixed(1))+'万考生，分布 N('+track.gm.toFixed(0)+', '+track.gsd.toFixed(0)+'²)，Z-score='+zGk.toFixed(3)+'<br>'+(pd.type==='split'?'② 另外 '+((otherTrackPop/10000).toFixed(1))+'万其他科目考生和 ':'② ')+((nonGkPop/10000).toFixed(1))+'万非高考同龄人，按估算分布 N('+d.nm.toFixed(0)+', '+d.nsd.toFixed(0)+'²) 折算<br>③ 三拨人合并，排全量 '+(d.tc/10000|0)+'万同龄人中的 <strong>前 '+topPct.toFixed(1)+'%</strong><br>④ 19岁'+genderLabel+'身高分布 N('+hMean.toFixed(1)+', '+hSD.toFixed(1)+'²) 同一百分位 → <strong>'+height.toFixed(1)+'cm</strong><br><br>数据：高考分布来自教育考试院一分一段表；非高考人群、跨科考生分布为合理估算；身高来自 Lancet 2020。';
   doneLoading();
-
-  // 重新触发数字弹跳动画
-  const rb=document.getElementById('resultHeight');
-  rb.style.animation='none';
-  rb.offsetHeight; // 强制回流
-  rb.style.animation='numberPop .65s cubic-bezier(.34,1.56,.64,1) forwards';
 }
 function resetCalc(){document.getElementById('inputCard').style.display='block';document.getElementById('resultCard').classList.remove('show');document.getElementById('heightBar').style.height='0';document.getElementById('heightBar').querySelector('.height-bar-label').textContent='';currentResult=null;window.scrollTo({top:0,behavior:'smooth'})}
 function toggleExplain(){document.getElementById('explainText').classList.toggle('show')}
