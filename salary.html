@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+<title>你的月薪，等于多重？</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","PingFang SC",sans-serif;
+  background:#fff;color:#333;line-height:1.8;
+}
+.calc-section{max-width:440px;margin:0 auto;padding:16px}
+.calc-header{text-align:center;padding:24px 0 12px}
+.calc-header h1{font-size:22px;font-weight:800;color:#222;margin-bottom:4px}
+.calc-header p{font-size:13px;color:#999}
+.card{
+  background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:20px 16px;margin-bottom:14px;
+}
+.card-title{font-size:15px;font-weight:700;color:#222;margin-bottom:14px}
+.select-group{margin-bottom:14px}
+.select-group label{display:block;font-size:13px;font-weight:600;margin-bottom:5px;color:#555}
+.gender-group{display:flex;gap:8px}
+.gender-btn{
+  flex:1;padding:11px;border:1px solid #ddd;border-radius:8px;text-align:center;
+  font-size:14px;font-weight:600;cursor:pointer;background:#fff;color:#888;
+}
+.gender-btn.active{border-color:#333;background:#333;color:#fff}
+.score-input-wrap{position:relative}
+.score-input-wrap input{
+  width:100%;padding:14px 50px 14px 16px;font-size:30px;font-weight:700;
+  border:1px solid #ddd;border-radius:8px;text-align:center;color:#333;
+  outline:none;-webkit-appearance:none;background:#fff;
+}
+.score-input-wrap input:focus{border-color:#555}
+.score-input-wrap .unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#999}
+.range-hint{font-size:11px;color:#aaa;text-align:center;margin-top:5px}
+.calc-btn{
+  width:100%;padding:14px;background:#2C3E50;color:#fff;
+  border:none;border-radius:8px;font-size:17px;font-weight:600;cursor:pointer;letter-spacing:2px;
+}
+.calc-btn:active{background:#1a2d3d}
+.result-card{display:none;text-align:center}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-card.show{display:block;animation:fadeInUp .4s ease}
+.result-big{font-size:52px;font-weight:800;color:#222;line-height:1.1}
+.result-big span{font-size:18px;font-weight:400;color:#999}
+.result-rank{font-size:15px;color:#555;margin:8px 0 16px;line-height:1.6}
+.result-rank strong{color:#333;font-size:17px}
+.weight-bar-wrap{position:relative;height:200px;margin:0 auto 18px;max-width:280px;background:#f8f8f8;border-radius:12px 12px 0 0;overflow:hidden}
+.weight-bar{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:110px;
+  border-radius:12px 12px 0 0;background:#2C3E50;
+  transition:height .9s cubic-bezier(.22,1.12,.49,1.05);
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px
+}
+.weight-bar-label{font-size:16px;font-weight:700;color:#fff}
+.avg-line{position:absolute;left:5%;right:5%;border-top:1.5px dashed #ccc}
+.avg-line-label{position:absolute;right:6px;font-size:10px;color:#aaa;transform:translateY(-50%);background:#f8f8f8;padding:1px 4px;border-radius:2px}
+.result-msg{font-size:14px;line-height:1.8;color:#444;padding:0 4px;text-align:left}
+.result-msg .tag{display:inline-block;background:#f0f0f0;color:#555;padding:2px 7px;border-radius:4px;font-weight:600;font-size:12px;margin:1px}
+.share-section{margin-top:16px;display:flex;gap:8px}
+.share-btn{flex:1;padding:10px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+.share-btn.copy{background:#f0f0f0;color:#333;border:1px solid #ddd}
+.share-btn.wechat{background:#07C160;color:#fff}
+.explain-toggle{
+  display:block;width:100%;padding:11px;background:none;border:1px solid #eee;
+  border-radius:8px;font-size:13px;color:#888;cursor:pointer;margin-top:10px;
+}
+.explain-text{display:none;font-size:13px;color:#777;line-height:1.8;padding:12px;margin-top:8px;background:#fafafa;border-radius:8px;text-align:left}
+.explain-text.show{display:block}
+.reset-btn{
+  display:block;width:100%;padding:10px;margin-top:8px;background:none;border:1px solid #eee;
+  border-radius:8px;font-size:14px;color:#555;font-weight:600;cursor:pointer;
+}
+.data-source{
+  font-size:11px;color:#bbb;text-align:center;padding:0 8px;margin-top:12px;line-height:1.6;
+  border-top:1px solid #f0f0f0;padding-top:12px
+}
+.data-source span{color:#999}
+.footer{text-align:center;padding:20px 0 40px;font-size:11px;color:#ccc;line-height:1.8}
+</style>
+</head>
+<body>
+
+<div class="calc-section">
+  <div class="calc-header">
+    <h1>你的月薪，等于多重？</h1>
+    <p>把收入排名映射到体重，看看你在7亿就业人口里的分量</p>
+  </div>
+
+  <div class="card" id="inputCard">
+    <div class="card-title">输入信息</div>
+
+    <div class="select-group">
+      <label>性别</label>
+      <div class="gender-group">
+        <button class="gender-btn active" data-gender="male" onclick="selectGender('male',this)">男生</button>
+        <button class="gender-btn" data-gender="female" onclick="selectGender('female',this)">女生</button>
+      </div>
+    </div>
+
+    <div class="select-group">
+      <label>你的月薪（元）</label>
+      <div class="score-input-wrap">
+        <input type="number" id="salaryInput" placeholder="10000" inputmode="numeric">
+        <span class="unit">元</span>
+      </div>
+      <div class="range-hint">输入 0-100000 之间的月薪</div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">称 一 称 自 己</button>
+
+    <div class="data-source">
+      <span>数据说明</span><br>
+      收入分布：对数正态 N(ln3200, 0.85²)，全国就业人口约7.4亿<br>
+      体重数据：第五次国民体质监测公报（男72.5kg / 女58.0kg）
+    </div>
+  </div>
+
+  <div class="card result-card" id="resultCard">
+    <div class="result-big" id="resultWeight">--<span>kg</span></div>
+    <div class="result-rank" id="resultRank"></div>
+
+    <div class="weight-bar-wrap" id="weightBarWrap">
+      <div class="weight-bar" id="weightBar" style="height:0"><div class="weight-bar-label"></div></div>
+      <div class="avg-line" id="avgLine"></div>
+      <div class="avg-line-label" id="avgLineLabel"></div>
+    </div>
+
+    <div class="result-msg" id="resultMsg"></div>
+
+    <div class="share-section">
+      <button class="share-btn copy" onclick="copyResult()">复制结果</button>
+      <button class="share-btn wechat" onclick="shareWechat()">分享给朋友</button>
+    </div>
+
+    <button class="explain-toggle" onclick="toggleExplain()">这个体重是怎么算出来的？</button>
+    <div class="explain-text" id="explainText"></div>
+
+    <button class="reset-btn" onclick="resetCalc()">重新计算</button>
+  </div>
+
+  <div class="footer">数字体感 · 让抽象的数字变得可以触摸</div>
+</div>
+
+<script>
+// ===== 统计函数 =====
+function normalCDF(x){
+  const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  const sign=x<0?-1:1;x=Math.abs(x)/Math.sqrt(2);const t=1/(1+p*x);
+  return 0.5*(1+sign*(1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x)));
+}
+function normalQuantile(p){
+  if(p<=0)return -Infinity;if(p>=1)return Infinity;
+  const a0=2.50662823884,a1=-18.61500062529,a2=41.39119773534,a3=-25.44106049637;
+  const b1=-8.47351093090,b2=23.08336743743,b3=-21.06224101826,b4=3.13082909833;
+  const c0=0.3374754822726147,c1=0.9761690190917186,c2=0.1607979714918209,c3=0.0276438810333863;
+  const c4=0.0038405729373609,c5=0.0003951896511919,c6=0.0000321767881768,c7=0.0000002888167364,c8=0.0000003960315187;
+  const y=p-0.5;
+  if(Math.abs(y)<0.42){const r=y*y;return y*(((a3*r+a2)*r+a1)*r+a0)/((((b4*r+b3)*r+b2)*r+b1)*r+1)}
+  else{const r=p>0.5?1-p:p;const s=Math.log(-Math.log(r));let z=c0+s*(c1+s*(c2+s*(c3+s*(c4+s*(c5+s*(c6+s*(c7+s*c8)))))));return p>0.5?z:-z}
+}
+
+// ===== 模型参数 =====
+const SALARY_MEDIAN = 3200;   // 就业人口月收入中位数
+const SALARY_SIGMA = 0.85;    // 对数标准差
+const MALE_W_MEAN = 72.5, MALE_W_SD = 11.5;
+const FEMALE_W_MEAN = 58.0, FEMALE_W_SD = 9.5;
+const W_MIN = 35, W_MAX = 130;
+
+let currentGender = 'male';
+let currentResult = null;
+
+function selectGender(g, btn){
+  currentGender = g;
+  document.querySelectorAll('.gender-btn').forEach(b=>{b.classList.remove('active');b.style.background='#fff';b.style.color='#888'});
+  btn.classList.add('active');btn.style.background='#333';btn.style.color='#fff';
+}
+
+function calculate(){
+  const salary = parseInt(document.getElementById('salaryInput').value);
+  if(isNaN(salary)||salary<0||salary>100000){
+    alert('请输入 0-100000 之间的月薪');return;
+  }
+
+  // 对数正态分布：ln(salary) ~ N(ln(median), sigma²)
+  const lnMedian = Math.log(SALARY_MEDIAN);
+  const z = (Math.log(Math.max(salary,1)) - lnMedian) / SALARY_SIGMA;
+  const pct = normalCDF(z);  // 月薪在就业人口中的百分位
+  const topPct = (1 - pct) * 100;  // 前X%
+
+  // 映射到体重
+  const wMean = currentGender==='male' ? MALE_W_MEAN : FEMALE_W_MEAN;
+  const wSD = currentGender==='male' ? MALE_W_SD : FEMALE_W_SD;
+  const zWeight = normalQuantile(Math.min(0.9999, Math.max(0.0001, pct)));
+  const weight = wMean + zWeight * wSD;
+
+  const genderLabel = currentGender==='male'?'男生':'女生';
+
+  // 文案
+  let rankDesc;
+  if(topPct<=1){rankDesc='金字塔尖'}
+  else if(topPct<=5){rankDesc='相当有分量'}
+  else if(topPct<=10){rankDesc='月入过万，分量不轻'}
+  else if(topPct<=20){rankDesc='中上水平'}
+  else if(topPct<=50){rankDesc='中等偏上'}
+  else{rankDesc='还在爬坡'}
+
+  currentResult = {salary, gender:currentGender, weight, topPct, pct, wMean, wSD, genderLabel, rankDesc};
+
+  document.getElementById('inputCard').style.display='none';
+  document.getElementById('resultCard').classList.add('show');
+
+  document.getElementById('resultWeight').innerHTML = weight.toFixed(1)+'<span>kg</span>';
+  document.getElementById('resultRank').innerHTML =
+    '月入 <strong>¥'+salary.toLocaleString()+'</strong>，在全国约7.4亿就业人口中<br>排 <strong style="font-size:20px">前 '+topPct.toFixed(1)+'%</strong> · '+rankDesc;
+
+  document.getElementById('resultMsg').innerHTML =
+    '<strong>你的收入分量：</strong><br>'
+    +'在 <span class="tag">7.4亿 就业人口</span>中，月入 ¥'+salary.toLocaleString()+' 超越了 <strong>'+(pct*100).toFixed(1)+'%</strong> 的人<br>'
+    +'映射到 <span class="tag">'+genderLabel+'体重 N('+wMean.toFixed(1)+', '+wSD.toFixed(1)+'²)</span> → <strong>'+weight.toFixed(1)+'kg</strong><br>'
+    +'这是你在这个国家的「分量」。';
+
+  // 体重柱动画
+  setTimeout(()=>{
+    const barPct = Math.max(3, Math.min(100, (weight-W_MIN)/(W_MAX-W_MIN)*100));
+    const bar = document.getElementById('weightBar');
+    bar.style.height = barPct+'%';
+    bar.querySelector('.weight-bar-label').textContent = weight.toFixed(1)+'kg';
+  },150);
+
+  // 均值线
+  const avgPct = (wMean-W_MIN)/(W_MAX-W_MIN)*100;
+  document.getElementById('avgLine').style.bottom = avgPct+'%';
+  document.getElementById('avgLineLabel').style.bottom = avgPct+'%';
+  document.getElementById('avgLineLabel').textContent = genderLabel+'均值 '+wMean.toFixed(1)+'kg';
+
+  document.getElementById('explainText').innerHTML =
+    '<strong>计算步骤：</strong><br>'
+    +'① 月薪 ¥'+salary.toLocaleString()+' 在对数正态分布 N(ln3200, 0.85²) 中，Z = '+z.toFixed(3)+'<br>'
+    +'② 超越了 '+(pct*100).toFixed(1)+'% 的就业人口（前 '+(topPct).toFixed(1)+'%）<br>'
+    +'③ 在 '+genderLabel+'体重分布 N('+wMean.toFixed(1)+', '+wSD.toFixed(1)+'²) 中取同一百分位 → <strong>'+weight.toFixed(1)+'kg</strong><br>'
+    +'<br>数据：收入分布为估算（就业人口中位数3200元）；体重来自第五次国民体质监测公报。';
+}
+
+function resetCalc(){
+  document.getElementById('inputCard').style.display='block';
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('weightBar').style.height='0';
+  document.getElementById('weightBar').querySelector('.weight-bar-label').textContent='';
+  currentResult=null;window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleExplain(){document.getElementById('explainText').classList.toggle('show')}
+
+function copyResult(){
+  if(!currentResult)return;
+  const r=currentResult,g=r.gender==='male'?'男生':'女生';
+  copyText('我的月薪 ¥'+r.salary.toLocaleString()+'，等于'+g+'体重 '+r.weight.toFixed(1)+'kg！在全国就业人口中排前 '+r.topPct.toFixed(1)+'%。你也来称称：');
+}
+function shareWechat(){
+  if(!currentResult)return;
+  const r=currentResult,g=r.gender==='male'?'男生':'女生';
+  copyText('月入¥'+r.salary.toLocaleString()+' = '+g+'体重'+r.weight.toFixed(1)+'kg，前'+r.topPct.toFixed(1)+'%。你也来称称自己多重？');
+}
+function copyText(text){
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>alert('已复制！去微信粘贴吧'))}
+  else{prompt('复制这段文字分享：',text)}
+}
+
+document.getElementById('salaryInput').addEventListener('keydown',function(e){if(e.key==='Enter')calculate()});
+</script>
+</body>
+</html>
