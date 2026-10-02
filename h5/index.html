@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4F1EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14120F" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+<title>你的高考分，换算成身高是多少</title>
+<style>
+  /* ─────────────────────────────────────────────────────────────
+     设计语言：暖纸底 + 墨色字 + 一根墨玉青的结构线；
+     朱红（强调色）全页只出现一次——标在"你落在哪一档"的那个刻度上。
+     字号走 clamp 流式缩放，375px 手机与桌面同一套规则。
+     这里全部是"版式"。所有数值结论都来自页面底部的 vizkit-data 数据块，
+     不在这份样式里、也不在内联 HTML 里写死。
+     ───────────────────────────────────────────────────────────── */
+  :root{
+    --paper:#F4F1EA;
+    --ink:#15130F;
+    --ink-2:#4A4A4A;
+    --ink-3:#8A8A8A;
+    --rule:#DCD5C7;
+    --rule-2:#EBE5DA;
+    --brand:#0D7680;
+    --accent:#E3120B;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;color:var(--ink);background-color:var(--paper);
+    background-image:radial-gradient(120% 70% at 50% -12%,#FFFDF8 0%,rgba(255,253,248,0) 62%);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Source Han Sans SC","Microsoft YaHei",sans-serif;
+    font-size:16px;line-height:1.65;
+    font-variant-numeric:tabular-nums;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{max-width:620px;margin:0 auto;padding:0 26px 76px}
+
+  /* ── 报头 ── */
+  .mast{padding:66px 0 0}
+  .kicker{margin:0;font-size:11px;letter-spacing:.26em;color:var(--ink-3)}
+  .title{margin:20px 0 0;font-size:clamp(30px,9.2vw,46px);font-weight:800;
+         line-height:1.08;letter-spacing:-.01em}
+  .rule{margin-top:36px;height:1px;background:var(--rule)}
+
+  /* ── 模块 ── */
+  .module{padding:46px 0;border-bottom:1px solid var(--rule-2)}
+  .page > .module:last-of-type{border-bottom:0}
+  .head{display:flex;align-items:center;gap:11px;margin:0 0 28px}
+  .dash{width:18px;height:2px;background:var(--brand);flex:none}
+  .label{margin:0;font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--ink-2)}
+
+  /* ── 输入读数 ── */
+  .readout{display:flex;align-items:baseline;gap:10px}
+  .readout input{
+    flex:1 1 auto;min-width:0;width:100%;margin:0;padding:0 0 8px;
+    border:0;border-bottom:2px solid transparent;background:transparent;
+    color:var(--ink);font:inherit;font-weight:800;
+    font-size:clamp(52px,17vw,80px);line-height:1;letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums;outline:none;
+    transition:border-color .25s var(--ease);
+    -moz-appearance:textfield;
+  }
+  .readout input::-webkit-outer-spin-button,
+  .readout input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .readout input:focus{border-bottom-color:var(--brand)}
+  .unit{flex:none;font-size:17px;font-weight:500;color:var(--ink-3)}
+
+  /* ── 刻度轨 ── */
+  .rail{position:relative;margin:34px 0 0}
+  .rail::before{content:"";position:absolute;left:0;right:0;top:21px;height:2px;
+                background:var(--rule);border-radius:2px}
+  .rail .fill{position:absolute;left:0;top:21px;height:2px;width:0;z-index:1;
+              background:var(--brand);border-radius:2px;transition:width .12s var(--ease)}
+  .rail input[type=range]{
+    -webkit-appearance:none;appearance:none;position:relative;z-index:2;
+    width:100%;height:44px;margin:0;background:transparent;cursor:grab;
+  }
+  .rail input[type=range]:active{cursor:grabbing}
+  .rail input[type=range]::-webkit-slider-runnable-track{height:2px;background:transparent}
+  .rail input[type=range]::-moz-range-track{height:2px;background:transparent;border:0}
+  .rail input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:26px;height:26px;margin-top:-12px;
+    border-radius:50%;background:var(--paper);border:2px solid var(--ink);
+    box-shadow:0 2px 10px rgba(21,19,15,.20);
+    transition:transform .18s var(--ease),box-shadow .18s var(--ease);
+  }
+  .rail input[type=range]::-moz-range-thumb{
+    width:26px;height:26px;border-radius:50%;background:var(--paper);
+    border:2px solid var(--ink);box-shadow:0 2px 10px rgba(21,19,15,.20);
+  }
+  .rail input[type=range]:active::-webkit-slider-thumb{transform:scale(1.16)}
+  .scale{position:relative;height:34px;margin-top:6px}
+  .tick{position:absolute;top:0;transform:translateX(-50%);cursor:pointer;
+        font-size:11px;letter-spacing:.02em;color:var(--ink-3);white-space:nowrap;
+        transition:color .25s var(--ease)}
+  .tick i{display:block;width:1px;height:7px;margin:0 auto 6px;background:var(--rule);
+          transition:background .25s var(--ease),height .25s var(--ease)}
+  .tick.on{color:var(--accent)}
+  .tick.on i{background:var(--accent);height:13px}
+
+  /* ── 结论 ── */
+  .verdict{display:flex;align-items:baseline;gap:12px}
+  .num{font-size:clamp(62px,21vw,106px);font-weight:800;line-height:.9;
+       letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .verdict .unit{font-size:18px}
+  .rank{margin:24px 0 0;font-size:15px;letter-spacing:.01em;color:var(--ink-2)}
+  .rank b{font-weight:800;color:var(--ink)}
+  .meter{margin-top:16px;height:4px;border-radius:4px;background:var(--rule-2);overflow:hidden}
+  .meter span{display:block;height:100%;width:0;border-radius:4px;background:var(--brand);
+              transition:width .5s var(--ease)}
+  .note{margin:22px 0 0;font-size:13px;line-height:1.75;color:var(--ink-3)}
+
+  /* ── 桌面：宽屏下不是一个窄柱，而是两块并读 ──
+     手机（WeChat 的主场景）保持单列；只在 ≥880px 时改成两栏。 */
+  @media (min-width:880px){
+    .page{max-width:1060px;padding:0 56px 104px}
+    .duo{display:grid;grid-template-columns:1fr 1fr;column-gap:72px;
+         border-bottom:1px solid var(--rule-2)}
+    .duo .module{border-bottom:0;padding-bottom:40px}
+    .title{font-size:52px}
+  }
+
+  /* ── 曲线 ── */
+  .chart{margin:2px 0 0}
+  .chart svg{display:block;width:100%;height:170px}
+  .curve{fill:none;stroke:var(--brand);stroke-width:2;
+         stroke-linecap:round;stroke-linejoin:round}
+  .cursor{stroke:var(--rule);stroke-width:1}
+  .dot{fill:var(--accent);stroke:var(--paper);stroke-width:2}
+  .ref{stroke:var(--rule);stroke-width:1;stroke-dasharray:3 4}
+  .ref-label{fill:var(--ink-3);font-size:11px}
+  .caption{margin:18px 0 0;font-size:12px;line-height:1.75;color:var(--ink-3)}
+
+  /* ── 对照表 ── */
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:right;padding:15px 0;border-bottom:1px solid var(--rule-2)}
+  th:first-child,td:first-child{text-align:left}
+  th{padding-bottom:11px;font-size:11px;font-weight:600;letter-spacing:.12em;
+     color:var(--ink-3);border-bottom:1px solid var(--ink)}
+  td{font-size:16px;color:var(--ink-3)}
+  td.v{font-weight:700;color:var(--ink)}
+  tr.on td{color:var(--ink-2)}
+  tr.on td.v{color:var(--ink)}
+  tr.on td:first-child::before{content:"";display:inline-block;width:6px;height:6px;
+     margin-right:10px;border-radius:50%;background:var(--accent);vertical-align:middle}
+
+  /* ── 页脚 ── */
+  .colophon{margin-top:48px;font-size:11px;line-height:1.85;color:var(--ink-3)}
+  .colophon a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--rule)}
+
+  /* ── 入场 ── */
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .anim{animation:rise .72s var(--ease) both}
+  @media (prefers-reduced-motion:reduce){
+    .anim{animation:none}
+    .rail .fill,.meter span,.tick,.tick i,.readout input{transition:none}
+  }
+
+  /* ── 深色 ──
+     只换变量，不动任何布局。用的两个色取自引擎里**为深底验证过**的那一档：
+     封面线 #2FA8B4 与封面深底 #0B1A1C 的同族色。 */
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#14120F; --ink:#F2EFE7; --ink-2:#B8B0A2; --ink-3:#8A8177;
+      --rule:#2E2A24; --rule-2:#241F1A;
+      --brand:#2FA8B4; --accent:#FF5A4A;
+    }
+    body{background-image:radial-gradient(120% 70% at 50% -12%,#1E1B16 0%,rgba(30,27,22,0) 62%)}
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header class="mast anim" style="animation-delay:.02s">
+    <p class="kicker">数字体感 · 换个单位看自己</p>
+    <h1 class="title">你的高考分，换算成身高是多少</h1>
+    <div class="rule"></div>
+  </header>
+
+  <div class="duo">
+
+  <section class="module anim" style="animation-delay:.10s">
+    <div class="head"><span class="dash"></span><h2 class="label">你的高考分数</h2></div>
+    <div class="readout">
+      <input id="v" type="number" inputmode="decimal" step="any" autocomplete="off"
+             value="600" aria-label="高考分数">
+      <span class="unit">分</span>
+    </div>
+    <div class="rail">
+      <span class="fill" id="fill"></span>
+      <input id="r" type="range" min="0" max="1000" step="1" value="500"
+             aria-label="高考分数 滑杆">
+      <div class="scale" id="scale"></div>
+    </div>
+  </section>
+
+  <section class="module anim" style="animation-delay:.18s">
+    <div class="head"><span class="dash"></span><h2 class="label">换算出的身高</h2></div>
+    <div class="verdict">
+      <span class="num" id="num">—</span>
+      <span class="unit">cm</span>
+    </div>
+    <p class="rank" id="rank" aria-live="polite"></p>
+    <div class="meter"><span id="bar"></span></div>
+    <p class="note" id="note"></p>
+  </section>
+
+  </div>
+
+  <section class="module anim" style="animation-delay:.26s">
+    <div class="head"><span class="dash"></span><h2 class="label">换算曲线</h2></div>
+    <div class="chart"><svg id="chart" role="img" aria-label="高考分数与身高的换算曲线"></svg></div>
+    <p class="caption">曲线越平，说明这一段人越挤——同样的增量，换算出的身高涨得越少。</p>
+  </section>
+
+  <section class="module anim" style="animation-delay:.34s">
+    <div class="head"><span class="dash"></span><h2 class="label">高考分数对照</h2></div>
+    <table>
+      <thead><tr><th>高考分数</th><th>身高</th><th>位次</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+
+  <footer class="colophon anim" style="animation-delay:.42s">
+    数据来源：<a href="https://news.zynews.cn/yaowen/2025/06/26/169011.html" rel="noopener">河南省教育考试院《2025年普通高校招生一分一段表》</a> · 取数 2026-10-01
+  </footer>
+
+</main>
+
+<script type="application/json" id="vizkit-data">{"specId":"gaokao-shengao","schemaVersion":1,"source":{"name":"河南省教育考试院《2025年普通高校招生一分一段表》","url":"https://news.zynews.cn/yaowen/2025/06/26/169011.html","retrievedAt":"2026-10-01"},"labels":{"topic":"你的高考分，换算成身高是多少","input":"高考分数","output":"身高","in_unit":"分","out_unit":"cm","source":"河南省教育考试院《2025年普通高校招生一分一段表》","source_url":"https://news.zynews.cn/yaowen/2025/06/26/169011.html","retrieved":"2026-10-01"},"input":{"label":"高考分数","unit":"分","dist":{"kind":"normal","params":{"mean":460.0,"sd":101.0}},"ticks":[427.0,480.0,535.0,600.0],"logScale":false},"output":{"label":"身高","unit":"cm","dist":{"kind":"normal","params":{"mean":172.6,"sd":6.0}}},"claims":{"bendian":{"id":"bendian","kind":"lookup","input":427.0,"value":170.63960396039604,"percentile":62.806495717432654,"digits":1,"when":{},"text":"物理类本科线 427 分，对应身高 170.6cm"},"female_600":{"id":"female_600","kind":"lookup","input":600.0,"value":168.22376237623763,"percentile":8.285229075282462,"digits":1,"when":{"gender":"female"},"text":"同样的 600 分，女生的身高是 168.2cm"},"h_female_mean":{"id":"h_female_mean","kind":"value","input":null,"value":160.6,"percentile":null,"digits":1,"when":{},"text":"20～24 岁女性平均身高 160.6cm","extra":{"unit":"cm"}},"h_male_mean":{"id":"h_male_mean","kind":"value","input":null,"value":172.6,"percentile":null,"digits":1,"when":{},"text":"全国 20～24 岁男性平均身高 172.6cm","extra":{"unit":"cm"}},"hist_600":{"id":"hist_600","kind":"lookup","input":600.0,"value":185.2067415730337,"percentile":1.7815059060825846,"digits":1,"when":{"track":"history"},"text":"历史类考 600 分，换算成身高是 185.2cm"},"main":{"id":"main","kind":"lookup","input":600.0,"value":180.9168316831683,"percentile":8.285229075282462,"digits":1,"when":{},"text":"物理类考 600 分，换算成身高是 180.9cm"},"skxian":{"id":"skxian","kind":"lookup","input":535.0,"value":177.05544554455446,"percentile":22.88697393226033,"digits":1,"when":{},"text":"物理类特控线 535 分，对应身高 177.1cm"}},"lookupTables":{"default":[{"input":427.0,"output":170.63960396039604,"topPct":62.806495717432654,"inputText":"427","outputText":"170.6","pctText":"前 62.8%"},{"input":480.0,"output":173.7881188118812,"topPct":42.151478537824644,"inputText":"480","outputText":"173.8","pctText":"前 42.2%"},{"input":535.0,"output":177.05544554455446,"topPct":22.88697393226033,"inputText":"535","outputText":"177.1","pctText":"前 22.9%"},{"input":600.0,"output":180.9168316831683,"topPct":8.285229075282462,"inputText":"600","outputText":"180.9","pctText":"前 8.3%"}],"track=history":[{"input":427.0,"output":173.5438202247191,"topPct":43.7502881914773,"inputText":"427","outputText":"173.5","pctText":"前 43.8%"},{"input":480.0,"output":177.11685393258426,"topPct":22.578235223632852,"inputText":"480","outputText":"177.1","pctText":"前 22.6%"},{"input":535.0,"output":180.8247191011236,"topPct":8.52207576380526,"inputText":"535","outputText":"180.8","pctText":"前 8.5%"},{"input":600.0,"output":185.2067415730337,"topPct":1.7815059060825846,"inputText":"600","outputText":"185.2","pctText":"前 1.8%"}],"gender=female":[{"input":427.0,"output":158.8029702970297,"topPct":62.806495717432654,"inputText":"427","outputText":"158.8","pctText":"前 62.8%"},{"input":480.0,"output":161.6891089108911,"topPct":42.151478537824644,"inputText":"480","outputText":"161.7","pctText":"前 42.2%"},{"input":535.0,"output":164.68415841584158,"topPct":22.88697393226033,"inputText":"535","outputText":"164.7","pctText":"前 22.9%"},{"input":600.0,"output":168.22376237623763,"topPct":8.285229075282462,"inputText":"600","outputText":"168.2","pctText":"前 8.3%"}]},"summary":{"claimCount":7,"variants":["default","track=history","gender=female"],"range":{"minInput":427.0,"minOutput":170.63960396039604,"maxInput":600.0,"maxOutput":180.9168316831683}}}</script>
+<script>
+
+// ── 与 vizkit.stats 对应的 JS 实现（Acklam PPND16 + 一次 Halley 精化）──
+// 上尾一律用 erfc，不用 1 - cdf：后者在右尾会舍入成 0。
+function _cdf(z) { return 0.5 * _erfc(-z * Math.SQRT1_2); }
+function _sf(z)  { return 0.5 * _erfc(z * Math.SQRT1_2); }
+function _pdf(z) { return Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI); }
+
+// erfc 的数值实现（Chebyshev 逼近，绝对误差 < 1.2e-7）。
+// 页面只用于显示，这个精度足够；若要更高精度应当改走服务端。
+function _erfc(x) {
+  const z = Math.abs(x);
+  const t = 1 / (1 + z / 2);
+  const r = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 +
+    t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 +
+    t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+  return x >= 0 ? r : 2 - r;
+}
+
+const _A = [-3.969683028665376e1, 2.209460984245205e2, -2.759285104469687e2,
+            1.383577518672690e2, -3.066479806614716e1, 2.506628277459239e0];
+const _B = [-5.447609879822406e1, 1.615858368580409e2, -1.556989798598866e2,
+            6.680131188771972e1, -1.328068155288572e1];
+const _C = [-7.784894002430293e-3, -3.223964580411365e-1, -2.400758277161838e0,
+            -2.549732539343734e0, 4.374664141464968e0, 2.938163982698783e0];
+const _D = [7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996e0,
+            3.754408661907416e0];
+const _PLOW = 0.02425;
+
+function _poly(c, x) { let s = c[0]; for (let i = 1; i < c.length; i++) s = s * x + c[i]; return s; }
+
+function _ppf(p) {
+  if (!(p > 0 && p < 1)) throw new Error('p 必须在 (0,1) 内: ' + p);
+  const upper = p > 0.5, q = upper ? 1 - p : p;
+  let z;
+  if (q < _PLOW) {
+    const r = Math.sqrt(-2 * Math.log(q));
+    z = _poly(_C, r) / (_poly(_D, r) * r + 1);
+    if (upper) z = -z;
+  } else {
+    const r = p - 0.5, s = r * r;
+    z = _poly(_A, s) * r / (_poly(_B, s) * s + 1);
+  }
+  // 与 Python 侧同一套精化：e 在正确的尾里算，修正量是 e / phi
+  for (let i = 0; i < 2; i++) {
+    const e = upper ? (q - _sf(z)) : (_cdf(z) - p);
+    const d = _pdf(z);
+    if (d === 0 || e === 0) break;
+    const u = e / d;
+    const den = 1 + 0.5 * z * u;
+    if (den === 0 || !isFinite(den)) break;
+    z -= u / den;
+  }
+  return z;
+}
+
+function _cdfOf(kind, x, prm) {
+  if (kind === 'normal')    return _cdf((x - prm.mean) / prm.sd);
+  if (kind === 'lognormal') return x <= 0 ? 0 : _cdf(Math.log(x / prm.median) / prm.sigma);
+  throw new Error('页面不支持分布类型: ' + kind);
+}
+function _ppfOf(kind, p, prm) {
+  if (kind === 'normal')    return prm.mean + prm.sd * _ppf(p);
+  if (kind === 'lognormal') return prm.median * Math.exp(prm.sigma * _ppf(p));
+  throw new Error('页面不支持分布类型: ' + kind);
+}
+function _tailOf(kind, x, prm) {
+  if (kind === 'normal')    return _sf((x - prm.mean) / prm.sd);
+  if (kind === 'lognormal') return x <= 0 ? 1 : _sf(Math.log(x / prm.median) / prm.sigma);
+  throw new Error('页面不支持分布类型: ' + kind);
+}
+/** 分位对齐：输入值 → 同分位的输出值。返回 [值, 上尾百分比]。 */
+function convert(inputValue) {
+  const D = JSON.parse(document.getElementById('vizkit-data').textContent);
+  const c = _cdfOf(D.input.dist.kind, inputValue, D.input.dist.params);
+  const p = Math.min(Math.max(c, 1e-12), 1 - 1e-12);
+  const out = _ppfOf(D.output.dist.kind, p, D.output.dist.params);
+  return [out, _tailOf(D.input.dist.kind, inputValue, D.input.dist.params) * 100];
+}
+function fmtNum(v, d) { return v.toFixed(d === undefined ? 1 : d); }
+function fmtPct(p) {
+  if (p < 0.05) return '约 ' + p.toFixed(3) + '%';
+  if (p < 1) return '前 ' + p.toFixed(2) + '%';
+  return '前 ' + p.toFixed(1) + '%';
+}
+
+(function () {
+  'use strict';
+  var D = JSON.parse(document.getElementById('vizkit-data').textContent);
+  var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var $ = function (id) { return document.getElementById(id); };
+  var el = { v: $('v'), r: $('r'), scale: $('scale'), fill: $('fill'),
+             num: $('num'), rank: $('rank'), bar: $('bar'), note: $('note'), rows: $('rows') };
+
+  var idist = D.input.dist, odist = D.output.dist;
+  var ticks = (D.input.ticks || []).slice(), logS = !!D.input.logScale;
+
+  /* 滑杆量程取输入分布的 1% / 99% 分位，并把所有参考刻度兜进来。
+     对数轴（收入一类）走 log 映射，否则 99% 的量程会被挤在最左端。 */
+  var lo = _ppfOf(idist.kind, 0.01, idist.params);
+  var hi = _ppfOf(idist.kind, 0.99, idist.params);
+  if (ticks.length) { lo = Math.min(lo, Math.min.apply(null, ticks)); hi = Math.max(hi, Math.max.apply(null, ticks)); }
+  if (logS) { lo = Math.log(Math.max(lo, 1e-6)); hi = Math.log(Math.max(hi, 1e-6)); }
+  var pad = ((hi - lo) || 1) * 0.05;   /* 两端各留 5%，贴边的刻度标签才不会被切掉 */
+  lo -= pad; hi += pad;
+  var span = (hi - lo) || 1;
+  function pos(v) { return ((logS ? Math.log(Math.max(v, 1e-6)) : v) - lo) / span; }
+  function val(p) { var t = lo + span * p; return logS ? Math.exp(t) : t; }
+
+  /* 参考刻度：全部由数据生成——页面里不写死任何数字 */
+  ticks.forEach(function (t) {
+    var s = document.createElement('span');
+    s.className = 'tick';
+    s.setAttribute('data-at', String(t));
+    s.style.left = (Math.min(Math.max(pos(t), 0), 1) * 100) + '%';
+    s.innerHTML = '<i></i>' + Math.round(t);
+    s.addEventListener('click', function () {
+      el.v.value = String(Math.round(t));
+      render(false);
+    });
+    el.scale.appendChild(s);
+  });
+  var tickEls = [].slice.call(el.scale.children);
+
+  /* 刻度自动减个：相邻标签挨太近就藏掉后面那个，而不是让它们叠在一起。
+     和引擎出图同一条规则（"刻度该由数据决定，不是由画布决定"）。 */
+  (function thinTicks() {
+    var w = el.scale.clientWidth || 320, last = -1e9;
+    tickEls.forEach(function (t) {
+      var x = (parseFloat(t.style.left) / 100) * w;
+      var half = (t.offsetWidth || (t.textContent.length * 7)) / 2;
+      if (x - half < last + 8) { t.style.display = 'none'; } else { last = x + half; }
+    });
+  })();
+
+  /* 对照表：直接用引擎算好的行，页面不重算 */
+  var rows = D.lookupTables[Object.keys(D.lookupTables)[0]] || [];
+  el.rows.innerHTML = rows.map(function (r) {
+    return '<tr data-at="' + r.input + '"><td>' + r.inputText + '</td>' +
+           '<td class="v">' + r.outputText + '</td><td>' + r.pctText + '</td></tr>';
+  }).join('');
+  var rowEls = [].slice.call(el.rows.children);
+
+  var flagship = D.claims["hist_600"];
+  if (flagship) { el.note.textContent = '参考：' + flagship.text + '（' + fmtPct(flagship.percentile) + '）'; }
+
+  /* 换算曲线：80 个采样点全部现场算，页面不缓存任何数据 */
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var chart = document.getElementById('chart');
+  var cursorEl = null, dotEl = null;
+  var yOf = function () { return 0; };
+
+  function buildCurve() {
+    var w = chart.clientWidth || 600, h = 170, N = 80, py = 18;
+    chart.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    while (chart.firstChild) { chart.removeChild(chart.firstChild); }
+    var pts = [], mn = Infinity, mx = -Infinity, i, xv, yv;
+    for (i = 0; i < N; i++) {
+      xv = val(i / (N - 1));
+      yv = convert(xv)[0];
+      if (yv < mn) { mn = yv; }
+      if (yv > mx) { mx = yv; }
+      pts.push([i / (N - 1), yv]);
+    }
+    var range = (mx - mn) || 1;
+    yOf = function (v) { return h - py - ((v - mn) / range) * (h - py * 2); };
+    function mk(tag, cls, attrs) {
+      var node = document.createElementNS(SVGNS, tag);
+      node.setAttribute('class', cls);
+      Object.keys(attrs).forEach(function (a) { node.setAttribute(a, attrs[a]); });
+      chart.appendChild(node);
+      return node;
+    }
+    mk('path', 'curve', { d: pts.map(function (p, k) {
+      return (k ? 'L' : 'M') + (p[0] * w).toFixed(1) + ' ' + yOf(p[1]).toFixed(1);
+    }).join(' ') });
+
+    /* 参考线：换算量的中间值。让曲线不只是一个形状——读者一眼看出
+       自己落在中间值之上还是之下。 */
+    var ref = odist.kind === 'normal' ? odist.params.mean : odist.params.median;
+    if (isFinite(ref) && ref > mn && ref < mx) {
+      var ry = yOf(ref);
+      mk('line', 'ref', { x1: 0, x2: w, y1: ry, y2: ry });
+      var lab = document.createElementNS(SVGNS, 'text');
+      lab.setAttribute('class', 'ref-label');
+      lab.setAttribute('x', 2);
+      lab.setAttribute('y', ry - 7);
+      lab.textContent = '中位 ' + fmtNum(ref, 1) + D.output.unit;
+      chart.appendChild(lab);
+    }
+
+    cursorEl = mk('line', 'cursor', { x1: 0, x2: 0, y1: py, y2: h - py });
+    dotEl = mk('circle', 'dot', { r: 5, cx: 0, cy: 0 });
+  }
+
+  var raf = null;
+  function countTo(to) {
+    if (reduce) { el.num.textContent = to.toFixed(1); return; }
+    var from = parseFloat(el.num.textContent);
+    if (!isFinite(from)) { from = to; }
+    var t0 = performance.now();
+    if (raf) { cancelAnimationFrame(raf); }
+    (function step(now) {
+      var k = Math.min(1, (now - t0) / 460);
+      var e = 1 - Math.pow(1 - k, 3);
+      el.num.textContent = (from + (to - from) * e).toFixed(1);
+      if (k < 1) { raf = requestAnimationFrame(step); }
+    })(t0);
+  }
+
+  function render(fromRail) {
+    var v = parseFloat(el.v.value);
+    if (!isFinite(v)) { return; }
+    var t = Math.min(Math.max(pos(v), 0), 1);
+    el.fill.style.width = (t * 100) + '%';
+    if (!fromRail) {
+      var rv = String(Math.round(t * 1000));
+      if (el.r.value !== rv) { el.r.value = rv; }
+    }
+
+    var res = convert(v);
+    countTo(res[0]);
+    var beat = Math.max(0, Math.min(100, 100 - res[1]));
+    el.rank.innerHTML = '同一分位对齐 · 超过了 <b>' + fmtNum(beat, 1) + '%</b> 的人';
+    el.bar.style.width = beat + '%';
+
+    if (dotEl) {
+      var cx = Math.min(Math.max(pos(v), 0), 1) * (chart.clientWidth || 600);
+      dotEl.setAttribute('cx', cx);
+      dotEl.setAttribute('cy', yOf(res[0]));
+      cursorEl.setAttribute('x1', cx);
+      cursorEl.setAttribute('x2', cx);
+    }
+
+    var best = Infinity, near = null;
+    tickEls.forEach(function (el2) {
+      var d = Math.abs(parseFloat(el2.getAttribute('data-at')) - v);
+      if (d < best) { best = d; near = el2; }
+    });
+    tickEls.forEach(function (el2) { el2.classList.toggle('on', el2 === near); });
+    rowEls.forEach(function (row) {
+      row.classList.toggle('on', Math.abs(parseFloat(row.getAttribute('data-at')) - v) === best);
+    });
+  }
+
+  el.v.addEventListener('input', function () { render(false); });
+  el.r.addEventListener('input', function () {
+    el.v.value = String(Math.round(val(parseFloat(el.r.value) / 1000)));
+    render(true);
+  });
+
+  var rt = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(function () { buildCurve(); render(true); });
+  });
+
+  buildCurve();
+  render(false);
+})();
+</script>
+</body>
+</html>
