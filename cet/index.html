@@ -127,6 +127,10 @@
   .num.is-name{font-size:clamp(34px,10.5vw,58px);line-height:1.12;letter-spacing:-.01em;
                text-wrap:balance}
   .verdict .unit{font-size:18px}
+  /* 对照表里的档位序号：跟在段位名后面当小字。序号不是给读者看的结论，
+     是给"同档之内偏上还是偏下"用的——所以它必须比名字小一档、颜色退一级。 */
+  .ord{margin-left:6px;font-size:12px;font-weight:500;color:var(--ink-3);
+       font-variant-numeric:tabular-nums}
   .rank{margin:24px 0 0;font-size:15px;letter-spacing:.01em;color:var(--ink-2)}
   .rank b{font-weight:800;color:var(--ink)}
   .meter{margin-top:16px;height:4px;border-radius:4px;background:var(--rule-2);overflow:hidden}
@@ -518,9 +522,10 @@ function fmtPct(p) {
       var p = Math.min(Math.max(c, 1e-12), 1 - 1e-12);
       var tail = _tailOf(src.kind, t, src.params) * 100;
       var name = rankAt(sel, tail);
+      var ord = fmtNum(_ppfOf(dst.kind, p, dst.params), 1);
       return '<tr data-at="' + t + '"><td>' + fmtThousands(t) + '</td><td class="v">' +
-             (name || fmtNum(_ppfOf(dst.kind, p, dst.params), 1)) + '</td><td>' +
-             fmtPct(tail) + '</td></tr>';
+             (name ? name + '<span class="ord">' + ord + D.output.unit + '</span>' : ord) +
+             '</td><td>' + fmtPct(tail) + '</td></tr>';
     }).join('');
     rowEls = [].slice.call(el.rows.children);
   }
@@ -700,9 +705,12 @@ function fmtPct(p) {
     // 能看出在档内偏上还是偏下），所以不删，只是不再当主角。
     var name = rankAt(sel, res[1]);
     if (name) {
+      // 结论位置**只印档位名**。序号不进这里：它是连续值，读者看不懂，
+      // 而且会让人以为"4.2 档"才是答案。序号仍然有用（能看出在档内偏上还是偏下），
+      // 所以放在下面那张对照表里当小字，不当主角。
       el.num.textContent = name;
       el.num.classList.add('is-name');
-      el.unit.textContent = '第 ' + fmtNum(res[0], 1) + D.output.unit;
+      el.unit.textContent = '';
     } else {
       el.num.classList.remove('is-name');
       el.unit.textContent = D.output.unit;
